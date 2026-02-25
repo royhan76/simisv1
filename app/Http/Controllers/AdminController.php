@@ -93,34 +93,39 @@ class AdminController extends Controller
             'wali_id' => $request->nik_ayah
         ]);
 
-
         $validatedData = $request->validate([
-            'image' => 'required|image|mimes:jpg,png,jpeg,gif,svg|max:2048',
-
+    'image' => 'required|image|mimes:jpg,png,jpeg,gif,svg|max:2048',
         ]);
 
-        $insertPhotos = Photo::create([
+        // Simpan file ke storage/app/public/images
+        $path = $request->file('image')->store('images', 'public');
+
+        Photo::create([
             'name' => $request->file('image')->getClientOriginalName(),
-            'path' => $request->file('image')->getClientOriginalName(),
-            'santri_id' => $request->nik,
-        ]);
-        $dataPhoto = ([
-            'name' => $request->file('image')->getClientOriginalName(),
-            'path' => $request->file('image')->store('public/images'),
+            'path' => $path, // ✅ ini yang benar
             'santri_id' => $request->nik,
         ]);
 
+        // $validatedData = $request->validate([
+        //     'image' => 'required|image|mimes:jpg,png,jpeg,gif,svg|max:2048',
 
-        $save = new Photo();
-        // $save->id_santri => $santri_id;
-        // $save->name => $name;
-        // $save->path => $path;
+        // ]);
 
-        // return $insertPhotos->save();
-        // $save->save();
+        // $insertPhotos = Photo::create([
+        //     'name' => $request->file('image')->getClientOriginalName(),
+        //     'path' => $request->file('image')->getClientOriginalName(),
+        //     'santri_id' => $request->nik,
+        // ]);
+        // $dataPhoto = ([
+        //     'name' => $request->file('image')->getClientOriginalName(),
+        //     'path' => $request->file('image')->store('public/images'),
+        //     'santri_id' => $request->nik,
+        // ]);
+
+
+        // $save = new Photo();
 
         return redirect()->route('admin');
-        // return $data;
     }
 
     public function getSantri(Request $request)
