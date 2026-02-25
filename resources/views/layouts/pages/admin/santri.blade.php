@@ -43,6 +43,7 @@
 
 @push('javascript')
     <script type="text/javascript">
+
         $(document).ready(function() {
             var table = $('#tabel-data').DataTable({
                 processing: true,
@@ -86,64 +87,37 @@
 
             });
 
-            $("#tabel-data").on("click", "#btn-hapus", function() {
+            $("#tabel-data").on("click", ".btn-hapus", function(e) {
+                e.preventDefault();
+
+                let santri_id = $(this).data("id");
+
                 swal({
                     title: "Hapus data",
-                    text: "Apakah anda yakin akan menghapus data ini ?",
-                    type: "warning",
+                    text: "Yakin hapus data ini?",
                     icon: "warning",
-                    showLoaderOnConfirm: true,
-                    buttons: {
-                        cancel: {
-                            visible: true,
-                            text: "Batal",
-                            className: "btn btn-warning"
-                        },
-                        confirm: {
-                            text: "Hapus",
-                            className: "btn btn-danger"
-                        }
-                    }
-                }).then(Delete => {
-                    if (Delete) {
-                        $("#overlay").show();
+                    buttons: ["Batal", "Hapus"],
+                    dangerMode: true,
+                }).then((willDelete) => {
+
+                    if (willDelete) {
+
                         $.ajax({
-                            type: "ajax",
-                            method: 'post',
-                            url: '{{ url('/admin/') }}' + $(this)
-                            .data('santri_id') +'/hapus',
-                            data: {
-                                _token: "{{ csrf_token() }}",
-                                id: $(this).data("id")
-                            },
-                            async: true,
-                            dataType: "json",
+                            url: "/admin/" + santri_id,
+                            type: "DELETE",
                             success: function(response) {
-                                tabel.ajax.reload();
-                                swal({
-                                    title: response.message,
-                                    type: "success",
-                                    icon: "success"
-                                });
-                                $("#overlay").hide();
+                                table.ajax.reload();
+                                swal("Berhasil!", response.message, "success");
                             },
-                            error: function() {
-                                tabel.ajax.reload();
-                                swal({
-                                    title: response.message,
-                                    type: "error",
-                                    icon: "error"
-                                });
-                                $("#overlay").hide();
+                            error: function(xhr) {
+                                console.log(xhr.responseText);
                             }
                         });
-                    } else {
-                        swal.close();
+
                     }
                 });
             });
 
         });
     </script>
-
 @endpush

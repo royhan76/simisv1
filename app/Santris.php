@@ -15,8 +15,11 @@ class Santris extends Authenticatable
      *
      * @var array
      */
-    protected $table = 'santri';
+
     protected $primaryKey = 'santri_id';
+    public $incrementing = false; // kalau bukan auto increment
+    protected $keyType = 'string'; // kalau id berupa string
+    protected $table = 'santri';
     protected $fillable = ['santri_id', 'no_induk','kk','nik','nisn','tempat_lahir','tgl_lahir','nama','khos','status','jalan','kelurahan','kecamatan','kabupaten','provinsi','kodepos','pend_terakhir','wali_id'];
 
 

@@ -17,7 +17,7 @@ Route::group(
         function () {
 
         Route::get('/', 'AdminController@halamanDashboard')->name('admin');
-        Route::get('/alldatasantri', 'AdminController@index');
+        Route::get('/alldatasantri', 'AdminController@index')->name('alldatasantri');
         Route::get('dataSantri', 'AdminController@getSantri')->name('dataSantri');
         Route::get('form_baru', 'AdminController@create')->name('form_baru');
         Route::get('form_lama', 'AdminController@createSantriLama')->name('form_lama');
@@ -25,7 +25,8 @@ Route::group(
         Route::post('add_santri_baru', 'AdminController@store')->name('add_santri_baru');
         Route::get('/{id}', 'AdminController@show');
         Route::get('/{id}/edit', 'AdminController@edit');
-        Route::get('/{id}/hapus', 'AdminController@destroy');
+        Route::delete('{id}', 'AdminController@destroy')->name('santri.destroy');
+        // Route::get('/{id}/hapus', 'AdminController@destroy');
         Route::put('update/{id}', 'AdminController@update');
         // Route::get('admin/pengguna', 'PenggunaController@pengguna')->name('pengguna')->middleware('auth');
         Route::get('data/users', 'PenggunaController@pengguna');
@@ -79,7 +80,8 @@ Route::group(['middleware' => 'auth'], function () {
 // Route::get('/login','HomeController@login')->name('login')->middleware('guest');
 Route::get('/', function () {
     return view('auth.login');
-})->name('login')->middleware('guest');
+})->name('loginn')->middleware('guest');
 
 
-Route::get('datamaarif', 'KeamananController@pengurusKeamanan');
+
+// Route::get('datamaarif', 'KeamananController@pengurusKeamanan');

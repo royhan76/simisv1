@@ -28,7 +28,7 @@
                 <div class="card full-height">
                     <div class="card-body">
                         <div class="avatar avatar-xxl">
-                            <img src="{{ asset('storage/images/'.$photo) }}" alt="..." class="avatar-img rounded-circle">
+                            <img src="{{ asset('storage/'.$photo) }}" alt="..." class="avatar-img rounded-circle">
                         </div>
                         {{-- {{$foto}} --}}
                         <div class="card-title"><h2></span>{{$santri->nama}}</h2></div>

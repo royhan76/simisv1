@@ -102,7 +102,7 @@ class AdminController extends Controller
 
         Photo::create([
             'name' => $request->file('image')->getClientOriginalName(),
-            'path' => $path, // ✅ ini yang benar
+            'path' => $path,
             'santri_id' => $request->nik,
         ]);
 
@@ -140,12 +140,12 @@ class AdminController extends Controller
                         $button = "<div class='btn-group'>";
                         $button .= '<a href="' . url('/admin', $data->santri_id) . '" class="btn btn-success btn-xs"><i class="la flaticon-search-2"></i></a>';
                         $button .= '<a href="' . url('/admin/' . $data->santri_id . '/edit') . '" class="btn btn-warning btn-xs"><i class="icon-note"></i></a>';
-                        $button .= '<a href="' . url('/admin/' . $data->santri_id . '/hapus') . '" class="btn btn-danger btn-xs"><i class="icon-trash"></i></a>';
-                        $button .= '<button type="submit"  id="btn-simpan"  class="btn btn-xs btn-danger" data-id="'    . $data->santri_id               . '" ></button>';
-                        // $button .= '<button id="btn-hapus" class="btn btn-xs btn-danger"
-                        // data-id="'    . $data->santri_id               . '"
-                        // ><i class="icon-trash"></i></button>';
-                        // $button .= '<button class="btn btn-danger btn-xs" id="btn-hapus" data-id="'+$data->santri_id+'"><i class="icon-trash"></i></button>';
+                        $button .= '<a href="javascript:void(0)"
+                        data-id="'.$data->santri_id.'"
+                        class="btn-hapus btn btn-danger btn-xs">
+                        <i class="icon-trash"></i>
+                    </a>';
+
                         $button .= "</div>";
                         return $button;
 
@@ -194,14 +194,12 @@ class AdminController extends Controller
         $data = Photo::find($id);
 
         if ($request->hasFile('photo')) {
-            // Hapus foto lama
-            Storage::delete('public/images/' . $data->name);
 
-            // Simpan foto baru
-            $photo = $request->file('photo');
-            $filename = $photo->getClientOriginalName();
-            $path = $photo->storeAs('public/images', $filename);
-            $data->path = $filename;
+            Storage::disk('public')->delete($data->path);
+
+            $path = $request->file('photo')->store('images', 'public');
+
+            $data->path = $path;
         }
 
         $data->save();
@@ -261,11 +259,14 @@ class AdminController extends Controller
     public function destroy($id)
     {
 
-       $data = DB::table('santri')->where('santri_id', $id)->delete();
-       $data = DB::table('wali')->where('santri_id', $id)->delete();
-       $data = DB::table('photos')->where('santri_id', $id)->delete();
+    // dd($id);
+        DB::table('santri')->where('santri_id', $id)->delete();
+        DB::table('wali')->where('santri_id', $id)->delete();
+        DB::table('photos')->where('santri_id', $id)->delete();
 
-       return redirect()->route('admin')->with('success', 'Foto updated successfully');
+        return response()->json([
+            'message' => 'Data berhasil dihapus'
+        ]);
     }
 
     public function editFoto($id)

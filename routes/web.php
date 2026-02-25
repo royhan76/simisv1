@@ -13,31 +13,23 @@ Route::group(
     ['middleware' =>'is_admin'],
     function () {
 
-    Route::prefix('admin')->group(
-        function () {
+    Route::prefix('admin')->group(function () {
 
-        Route::get('/', 'AdminController@halamanDashboard')->name('admin');
-        Route::get('/alldatasantri', 'AdminController@index');
-        Route::get('dataSantri', 'AdminController@getSantri')->name('dataSantri');
-        Route::get('form_baru', 'AdminController@create')->name('form_baru');
-        Route::get('form_lama', 'AdminController@createSantriLama')->name('form_lama');
+    Route::get('/', 'AdminController@halamanDashboard')->name('admin');
+    Route::get('/alldatasantri', 'AdminController@index')->name('alldatasantri');
+    Route::get('dataSantri', 'AdminController@getSantri')->name('dataSantri');
+    Route::get('form_baru', 'AdminController@create')->name('form_baru');
+    Route::get('form_lama', 'AdminController@createSantriLama')->name('form_lama');
 
-        Route::post('add_santri_baru', 'AdminController@store')->name('add_santri_baru');
-        Route::get('/{id}', 'AdminController@show');
-        Route::get('/{id}/edit', 'AdminController@edit');
-        Route::get('/{id}/hapus', 'AdminController@destroy');
-        Route::put('update/{id}', 'AdminController@update');
-        // Route::get('admin/pengguna', 'PenggunaController@pengguna')->name('pengguna')->middleware('auth');
-        Route::get('data/users', 'PenggunaController@pengguna');
-        Route::get('datamaarif', 'PenggunaController@pengguna');
+    Route::post('add_santri_baru', 'AdminController@store')->name('add_santri_baru');
 
+    // 🔥 TARUH DELETE SEBELUM GET {id}
+    Route::delete('{id}', 'AdminController@destroy')->name('santri.destroy');
 
-        // Keamanan
-        Route::get('/keamanan/datakeamanan', 'KeamananController@pengurusKeamanan');
-        Route::get('/maarif/datamaarif', 'MaarifController@dataMaarif');
+    Route::get('{id}/edit', 'AdminController@edit');
+    Route::get('{id}', 'AdminController@show');
 
-        // data masyayikh
-
+    Route::put('update/{id}', 'AdminController@update');
 
     });
 });
