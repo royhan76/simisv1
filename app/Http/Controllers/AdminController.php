@@ -3,8 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Photo;
+use App\DokKkModel;
 use App\Santris;
 use App\WaliModel;
+use App\ThnKeluarModel;
+use App\ThnMasukModel;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
@@ -49,6 +52,8 @@ class AdminController extends Controller
     public function store(Request $request)
     {
 
+        // dd($request);
+
         $tgl_lahir_ayah = date('Y-m-d', strtotime($request->tgl_lahir_ayah));
         $tgl_lahir_ibu = date('Y-m-d', strtotime($request->tgl_lahir_ibu));
         $tgl_lahir = date('Y-m-d', strtotime($request->tgl_lahir));
@@ -57,18 +62,18 @@ class AdminController extends Controller
 
                 // 'santri_id','ayah_id','ayah_nik','ayah','pend_terakhir_id_ayah','ttl_ayah','pekerjaan_ayah','nik_ibu','ibu','ttl_ibu','pekerjaan_ibu','pend_terakhir_id_ibu'
                 'santri_id'  => $request->nik,
-                'ayah_nik' => $request->nik_ayah,
+                // 'ayah_nik' => $request->nik_ayah,
                 'ayah' => $request->ayah,
-                'pend_terakhir_id_ayah' => $request->pendidikan_id_ayah,
-                'tempat_lahir_ayah' => $request->tempat_lahir_ayah,
-                'tgl_lahir_ayah' => $tgl_lahir_ayah,
-                'pekerjaan_ayah' => $request->pekerjaan_ayah,
-                'nik_ibu' => $request->nik_ibu,
-                'ibu' => $request->ibu,
-                'tempat_lahir_ibu' => $request->tempat_lahir_ibu,
-                'tgl_lahir_ibu' => $tgl_lahir_ibu,
-                'pekerjaan_ibu' => $request->pekerjaan_ibu,
-                'pend_terakhir_id_ibu' => $request->pend_id_ibu,
+                // 'pend_terakhir_id_ayah' => $request->pendidikan_id_ayah,
+                // 'tempat_lahir_ayah' => $request->tempat_lahir_ayah,
+                // 'tgl_lahir_ayah' => $tgl_lahir_ayah,
+                // 'pekerjaan_ayah' => $request->pekerjaan_ayah,
+                // 'nik_ibu' => $request->nik_ibu,
+                // 'ibu' => $request->ibu,
+                // 'tempat_lahir_ibu' => $request->tempat_lahir_ibu,
+                // 'tgl_lahir_ibu' => $tgl_lahir_ibu,
+                // 'pekerjaan_ibu' => $request->pekerjaan_ibu,
+                // 'pend_terakhir_id_ibu' => $request->pend_id_ibu,
             ]
         );
 
@@ -77,7 +82,6 @@ class AdminController extends Controller
             'no_induk' => $request->no_induk,
             'kk' => $request->kk,
             'nik' => $request->nik,
-            'nisn' => $request->nisn,
             'tempat_lahir'  => $request->tempat_lahir,
             'tgl_lahir'  => $tgl_lahir,
             'nama' => $request->nama_lengkap,
@@ -88,9 +92,8 @@ class AdminController extends Controller
             "kecamatan" => $request->kecamatan_id,
             "kabupaten" => $request->kabupaten_id,
             "provinsi" => $request->propinsi_id,
-            'kodepos' => $request->kode_pos,
             'pend_terakhir' => $request->pendidikan_id,
-            'wali_id' => $request->nik_ayah
+            'no_tlp' => $request->no_tlp,
         ]);
 
         $validatedData = $request->validate([
@@ -105,25 +108,21 @@ class AdminController extends Controller
             'path' => $path,
             'santri_id' => $request->nik,
         ]);
-
-        // $validatedData = $request->validate([
-        //     'image' => 'required|image|mimes:jpg,png,jpeg,gif,svg|max:2048',
-
-        // ]);
-
-        // $insertPhotos = Photo::create([
-        //     'name' => $request->file('image')->getClientOriginalName(),
-        //     'path' => $request->file('image')->getClientOriginalName(),
-        //     'santri_id' => $request->nik,
-        // ]);
-        // $dataPhoto = ([
-        //     'name' => $request->file('image')->getClientOriginalName(),
-        //     'path' => $request->file('image')->store('public/images'),
-        //     'santri_id' => $request->nik,
-        // ]);
-
-
-        // $save = new Photo();
+        DokKkModel::create([
+            'name' => $request->file('image')->getClientOriginalName(),
+            'path' => $path,
+            'id_santri' => $request->nik,
+        ]);
+        ThnMasukModel::create([
+            'id'=>$request->nik,
+            'id_santri'=>$request->nik,
+            'thn_masuk'=>$request->tahun_masuk,
+        ]);
+        ThnKeluarModel::create([
+            'id'=>$request->nik,
+            'id_santri'=>$request->nik,
+            'thn_keluar'=>$request->tahun_keluar,
+        ]);
 
         return redirect()->route('admin');
     }
@@ -166,17 +165,22 @@ class AdminController extends Controller
         $wali = WaliModel::where('santri_id', $id)->first();
 
         $foto = Photo::where('santri_id', $id)->first();
-
-        return view('layouts.pages.admin.detail')->with(compact('wali', 'santri', 'foto'));
+        $thn_masuk = ThnMasukModel::where('id_santri', $id)->first();
+        $thn_keluar = ThnKeluarModel::where('id_santri', $id)->first();
+        $dok_kk =DokKkModel::where('id_santri', $id)->first();
+        return view('layouts.pages.admin.detail')->with(compact('wali', 'santri', 'foto','thn_masuk', 'thn_keluar','dok_kk'));
     }
 
     public function edit($id)
     {
         $santri = Santris::where('santri_id', $id)->first();
         $wali = WaliModel::where('santri_id', $id)->first();
+        $thn_masuk = ThnMasukModel::where('id_santri', $id)->first();
+        $thn_keluar = ThnKeluarModel::where('id_santri', $id)->first();
 
         $foto = Photo::where('santri_id', $id)->first();
-        return view('layouts.pages.admin.edit')->with(compact('santri', 'wali', 'foto'));
+        $dok_kk =DokKkModel::where('id_santri', $id)->first();
+        return view('layouts.pages.admin.edit')->with(compact('santri', 'wali', 'foto','thn_masuk', 'thn_keluar','dok_kk'));
     }
 
     /**
@@ -201,7 +205,17 @@ class AdminController extends Controller
 
             $data->path = $path;
         }
+        $dok_kk = DokKkModel::find($id);
+        if ($request->hasFile('dok_kk')) {
 
+            Storage::disk('public')->delete($dok_kk->path);
+
+            $path = $request->file('dok_kk')->store('images', 'public');
+
+            $dok_kk->path = $path;
+        }
+
+        $dok_kk->save();
         $data->save();
         $santri = Santris::find($id);
         $wali = WaliModel::find($id);

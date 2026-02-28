@@ -1,11 +1,12 @@
 @extends('master')
 
 @php
-    $tLahir = str_replace("KABUPATEN","",$santri->tempat_lahir  );
+    $tLahir = str_replace("KABUPATEN","",$santri->tempat_lahir);
     $tLahir_ayah = str_replace("KABUPATEN","",$wali->tempat_lahir_ayah);
-    $tLahir_ibu = str_replace("KABUPATEN","",$wali->tempat_lahir_ibu  );
+    $tLahir_ibu = str_replace("KABUPATEN","",$wali->tempat_lahir_ibu);
     $tanggal_lahir = str_replace("00:00:00","", $santri->tgl_lahir);
-    $photo = str_replace("public", "", $foto->path);
+
+    $photo = $foto ? str_replace("public", "", $foto->path) : 'default.png';
 @endphp
 
 @section('body')
@@ -28,7 +29,7 @@
                 <div class="card full-height">
                     <div class="card-body">
                         <div class="avatar avatar-xxl">
-                            <img src="{{ asset('storage/'.$photo) }}" alt="..." class="avatar-img rounded-circle">
+                            <img src="{{ asset('storage/'.$photo) }}" class="avatar-img rounded-circle">
                         </div>
                         {{-- {{$foto}} --}}
                         <div class="card-title"><h2></span>{{$santri->nama}}</h2></div>
@@ -46,28 +47,40 @@
                         <div class="dropdown-divider"></div>
 
                         <div class="row py-2">
-                            <div class="col-md-4">
+                            <div class="col-md-6">
                                 <h5>No. Induk   : {{$santri->no_induk}}</h5>
                                 <h5>No. Kk      : {{$santri->kk}}</h5>
                                 <h5>Nik: {{$santri->nik}}</h5>
+                                 <h5>Ayah      : {{$wali->ayah}}</h5>
                                 <h5>Khos/Kamar: {{$santri->khos}}</h5>
                                 <h5>Status: {{$santri->status}}</h5>
                                 <h5>Pend. Terakhir: {{$santri->pend_terakhir}}</h5>
                             </div>
-                            <div class="col-md-4">
-                                <h5>{{$santri->provinsi}}</h5>
-                                <h5>{{$santri->kabupaten}}</h5>
-                                <h5>{{$santri->kecamatan}}</h5>
-                                <h5>{{$santri->kelurahan}}</h5>
-                                <h5>{{$santri->jalan}}</h5>
-                                <h5>{{$santri->kodepos}}</h5>
+                            <div class="col-md-6">
+                                <h5>Provinsi : {{$santri->provinsi}}</h5>
+                                <h5>Kabupaten : {{$santri->kabupaten}}</h5>
+                                <h5>Kecamatan : {{$santri->kecamatan}}</h5>
+                                <h5>Kelurahan/Desa : {{$santri->kelurahan}}</h5>
+                                <h5>Jl/Gang : {{$santri->jalan}}</h5>
+
                             </div>
                         </div>
+
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-12">
+                <div class="card full-height">
+
+                    <div class="card-body">
+                        <div class="card-title font-weight-bold" >Detail KK</div>
+                        <div class="dropdown-divider"></div>
+                        <img src="{{ asset('storage/'.$dok_kk->path) }}" class="img-fluid" alt="...">
                     </div>
                 </div>
             </div>
         </div>
-        <div class="row mt--2">
+        {{-- <div class="row mt--2">
             <div class="col-md-12">
                 <div class="card full-height">
                     <div class="card-body">
@@ -97,7 +110,7 @@
                     </div>
                 </div>
             </div>
-        </div>
+        </div> --}}
 
     </div>
 @endsection

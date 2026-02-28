@@ -25,7 +25,6 @@
                                         <th>No</th>
                                         <th>Nama</th>
                                         <th>Nik</th>
-                                        <th>Nisn</th>
                                         <th>Tempat Lahir</th>
                                         <th>Khos</th>
                                         <th>Status</th>
@@ -61,10 +60,7 @@
                         data: 'nik',
                         name: 'nik'
                     },
-                    {
-                        data: 'nisn',
-                        name: 'nisn'
-                    },
+
                     {
                         data: 'tempat_lahir',
                         name: 'tempat_lahir'

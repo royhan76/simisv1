@@ -58,6 +58,9 @@ Route::get('kecamatan', 'AlamatsController@selectKecamatan');
 Route::get('alamat', 'AlamatsController@selectKelurahan');
 Route::get('pendidikan', 'PendidikanController@selectPendidikan');
 Route::get('status_santri', 'StatussantriController@StatussantriController');
+Route::get('status_mukim', 'StatusMukimController@StatusMukimController');
+Route::get('khos', 'KhosController@khos');
+
 
 Route::group(['middleware' => 'auth'], function () {
     Route::prefix('santri')->group(function () {
