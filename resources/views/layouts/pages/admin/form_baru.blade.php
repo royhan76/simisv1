@@ -134,18 +134,18 @@
                                     <div class="form-group ">
                                         <label for="inputFloatingLabel2" class="placeholder">Tahun Masuk</label>
                                         <input id="inputFloatingLabel2" id="tahun_masuk" name="tahun_masuk"
-                                            type="date" class="form-control input-full" required=""
+                                            type="date" class="form-control input-full"
                                             placeholder="Tahun Masuk">
                                     </div>
                                     <div class="form-group ">
                                         <label for="inputFloatingLabel2" class="placeholder">Tahun Keluar</label>
                                         <input id="inputFloatingLabel2" id="tahun_keluar" name="tahun_keluar"
-                                            type="date" class="form-control input-full" required=""
+                                            type="date" class="form-control input-full"
                                             placeholder="Tahun keluar">
                                     </div>
                                     <div class="form-group ">
                                         <label for="inputFloatingLabel2" class="placeholder">Dokumen kk</label><br>
-                                        <input type="file" name="dok_kk" id="dok_kk" required>
+                                        <input type="file" name="dok_kk" id="dok_kk" >
                                     </div>
                                     <div class="form-group ">
                                         <label for="inputFloatingLabel2" class="placeholder">Foto Profil</label><br>
