@@ -46,7 +46,7 @@
                                     <div class="form-group ">
                                         <label for="inputFloatingLabel2" class="placeholder">No. Induk</label>
                                         <input id="inputFloatingLabel2" id="no_induk" name="no_induk" type="text"
-                                            class="form-control input-full" readonly="readonly" required=""
+                                            class="form-control input-full"  required=""
                                             value="{{ $santri->santri_id }}">
                                     </div>
                                     <div class="form-group ">
