@@ -1,9 +1,16 @@
 @extends('master')
 
 @php
-// dd($thn_masuk->thn_masuk);
-    $tanggal_lahir = str_replace('00:00:00', '', $santri->tgl_lahir);
-    $photo = str_replace("public", "", $foto->path);
+    use Carbon\Carbon;
+
+    $tanggal_lahir = $santri->tgl_lahir ? Carbon::parse($santri->tgl_lahir)->format('Y-m-d') : '';
+
+    $photo = $foto?->path ?? null;
+    $dokKkPath = $dok_kk?->path ?? null;
+
+    $tahunMasuk = $santri->thn_masuk ? Carbon::parse($santri->thn_masuk)->format('Y-m-d') : '';
+
+    $tahunKeluar = $santri->thn_keluar ? Carbon::parse($santri->thn_keluar)->format('Y-m-d') : '';
 @endphp
 
 
@@ -29,7 +36,8 @@
                 <div class="card full-height">
                     <div class="card-body">
 
-                        <form action="{{ url('/admin/update/'. $santri->santri_id) }}" method="POST" id="form_edit" class="form_edit"  enctype="multipart/form-data">
+                        <form action="{{ url('/admin/update/' . $santri->santri_id) }}" method="POST" id="form_edit"
+                            class="form_edit" enctype="multipart/form-data">
                             @csrf
                             @method('PUT')
                             <div class="row">
@@ -67,7 +75,7 @@
                                         <label for="inputFloatingLabel2" class="placeholder">Tanggal Lahir</label>
                                         <input type="text" id="tgl_lahir" name="tgl_lahir"
                                             class="form-control required input-full tanggal" placeholder="Tanggal Lahir"
-                                            value="{{ date('Y-m-d', strtotime($santri->tgl_lahir)) }}" onchange="#">
+                                            value="{{ $tanggal_lahir }}" onchange="#">
                                     </div>
                                     {{-- pendidikan_id --}}
 
@@ -85,18 +93,18 @@
                                 <div class="col-md-4 mt-3">
                                     <div class="form-group ">
                                         <div class="form-group ">
-                                        <label for="inputFloatingLabel2" class="placeholder">Khos</label>
-                                        <select class="khos form-control input-full required" name="khos"></select>
-                                        <input type="hidden" class="form-control input-full" id="khos"
-                                            name="khos" value="{{ $santri->khos }}">
-                                    </div>
-                                    <div class="form-group ">
-                                        <label for="inputFloatingLabel2" class="placeholder">Status Santri</label>
-                                        <select class="status_santri form-control input-full required"
-                                            name="status_santri"></select>
-                                        <input type="hidden" class="form-control input-full" id="status_santri"
-                                            name="status_santri" value="">
-                                    </div>
+                                            <label for="inputFloatingLabel2" class="placeholder">Khos</label>
+                                            <select class="khos form-control input-full required" name="khos"></select>
+                                            <input type="hidden" class="form-control input-full" id="khos"
+                                                name="khos" value="{{ $santri->khos }}">
+                                        </div>
+                                        <div class="form-group ">
+                                            <label for="inputFloatingLabel2" class="placeholder">Status Santri</label>
+                                            <select class="status_santri form-control input-full required"
+                                                name="status_santri"></select>
+                                            <input type="hidden" class="form-control input-full" id="status_santri"
+                                                name="status_santri" value="">
+                                        </div>
                                         <label for="inputFloatingLabel2" class="placeholder">Provinsi</label>
                                         <select class="propinsi_id form-control input-full required" name="propinsi_id"
                                             style=" height: 62px;"></select>
@@ -131,38 +139,57 @@
                                     <div class="form-group ">
                                         <label for="inputFloatingLabel2" class="placeholder">Gang/Rt/Rw</label>
                                         <input id="inputFloatingLabel2" id="jalan" name="jalan" type="text"
-                                            class="form-control input-full" required="" value="{{$santri->jalan}}">
+                                            class="form-control input-full"  value="{{ $santri->jalan }}">
                                     </div>
 
                                     <div class="form-group ">
                                         <label for="inputFloatingLabel2" class="placeholder">Nama Wali</label>
                                         <input id="inputFloatingLabel2" id="ayah" name="ayah" type="text"
-                                            class="form-control input-full" required="" value="{{$wali->ayah}}">
+                                            class="form-control input-full" required="" value="{{ $wali->ayah ?? '' }}">
                                     </div>
                                     <div class="form-group ">
                                         <label for="inputFloatingLabel2" class="placeholder">No. Tlpn</label>
                                         <input id="inputFloatingLabel2" id="no_tlp" name="no_tlp" type="number"
-                                            class="form-control input-full" required="" value="{{$santri->no_tlp}}">
+                                            class="form-control input-full"
+                                            value="{{ $santri->no_tlp }}">
                                     </div>
                                     <div class="form-group ">
                                         <label for="inputFloatingLabel2" class="placeholder">Tahun Masuk</label>
-                                        <input id="inputFloatingLabel2" id="tahun_masuk" name="tahun_masuk"
-                                            type="date" class="form-control input-full" required="" value="{{ date('Y-m-d', strtotime($thn_masuk->thn_masuk)) }}"
+                                        <input id="tahun_masuk" name="tahun_masuk" type="date"
+                                            class="form-control input-full" value="{{ $tahunMasuk }}"
                                             placeholder="Tahun Masuk">
                                     </div>
                                     <div class="form-group ">
                                         <label for="inputFloatingLabel2" class="placeholder">Tahun Keluar</label>
-                                        <input id="inputFloatingLabel2" id="tahun_keluar" name="tahun_keluar"
-                                            type="date" class="form-control input-full" required="" value="{{ date('Y-m-d', strtotime($thn_keluar->thn_keluar)) }}"
-                                            placeholder="Tahun keluar">
+                                        <input id="tahun_keluar" name="tahun_keluar" type="date"
+                                            class="form-control input-full" value="{{ $tahunKeluar }}"
+                                            placeholder="Tahun Keluar">
                                     </div>
-                                    <div class="form-group ">
-                                        <label for="inputFloatingLabel2" class="placeholder">Dokumen kk</label><br>
-                                        <input type="file" name="dok_kk" id="dok_kk" required >
+                                    <div class="form-group">
+                                        <label class="placeholder">Dokumen KK</label><br>
+
+                                        @if ($dokKkPath)
+                                            <div class="mb-2">
+                                                <a href="{{ asset('storage/' . $dokKkPath) }}" target="_blank"
+                                                    class="btn btn-sm btn-info">
+                                                    Lihat Dokumen KK
+                                                </a>
+                                            </div>
+                                        @endif
+
+                                        <input type="file" name="dok_kk" id="dok_kk" class="form-control">
                                     </div>
-                                    <div class="form-group ">
-                                        <label for="inputFloatingLabel2" class="placeholder">Photo</label><br>
-                                        <input type="file" name="photo" value="{{$foto->path}}">
+                                    <div class="form-group">
+                                        <label class="placeholder">Photo</label><br>
+
+                                        @if ($photo)
+                                            <div class="mb-2">
+                                                <img src="{{ asset('storage/' . $photo) }}" width="150"
+                                                    class="img-thumbnail">
+                                            </div>
+                                        @endif
+
+                                        <input type="file" name="photo" class="form-control">
                                     </div>
                                 </div>
                             </div>
@@ -170,7 +197,7 @@
                                 <div class="col-md-6">
                                     <div class="form-group form-inline">
                                         <div class="btn-group" style="margin-top: 20px;">
-                                            <a id="btn-batal" href="{{url('admin')}}"
+                                            <a id="btn-batal" href="{{ url('admin') }}"
                                                 class="btn btn-lg btn-primary">Batal</a>
                                             <button id="btn-simpan" type="submit"
                                                 class="btn btn-lg btn-success">Simpan</button>
@@ -186,7 +213,6 @@
             </div>
         </div>
     </div>
-
 @endsection
 
 
@@ -194,17 +220,39 @@
     <script type="text/javascript">
         $(document).ready(function() {
 
-            $('.propinsi_id').append('<option value="{{ $santri->provinsi }}" title="{{ $santri->provinsi }}">{{ $santri->provinsi }}</option>');
-            $('.kabupaten_id').append('<option value="{{ $santri->kabupaten }}" title="{{ $santri->kabupaten }}">{{ $santri->kabupaten }}</option>');
-            $('.kecamatan_id').append('<option value="{{ $santri->kecamatan }}" title="{{ $santri->kecamatan }}">{{ $santri->kecamatan }}</option>');
-            $('.kelurahan_id').append('<option value="{{ $santri->kelurahan }}" title="{{ $santri->kelurahan }}">{{ $santri->kelurahan }}</option>');
-            $('.status_santri').append('<option value="{{ $santri->status }}" title="{{ $santri->status }}">{{ $santri->status }}</option>');
-            $('.tempat_lahir').append('<option value="{{ $santri->tempat_lahir }}" title="{{ $santri->tempat_lahir }}">{{ $santri->tempat_lahir }}</option>');
-            $('.pendidikan_id').append('<option value="{{ $santri->pend_terakhir }}" title="{{ $santri->pend_terakhir }}">{{ $santri->pend_terakhir }}</option>');
-            $('.pendidikan_id_ayah').append('<option value="{{ $wali->	pend_terakhir_id_ayah }}" title="{{ $wali->	pend_terakhir_id_ayah }}">{{ $wali->	pend_terakhir_id_ayah }}</option>');
-            $('.pend_id_ibu').append('<option value="{{ $wali->pend_terakhir_id_ibu }}" title="{{ $wali->pend_terakhir_id_ibu }}">{{ $wali->pend_terakhir_id_ibu }}</option>');
-            $('.tempat_lahir_ayah').append('<option value="{{ $wali->tempat_lahir_ayah }}" title="{{ $wali->tempat_lahir_ayah }}">{{ $wali->tempat_lahir_ayah }}</option>');
-            $('.tempat_lahir_ibu').append('<option value="{{ $wali->tempat_lahir_ibu }}" title="{{ $wali->tempat_lahir_ibu }}">{{ $wali->tempat_lahir_ibu }}</option>');
+            $('.propinsi_id').append(
+                '<option value="{{ $santri->provinsi }}" title="{{ $santri->provinsi }}">{{ $santri->provinsi }}</option>'
+            );
+            $('.kabupaten_id').append(
+                '<option value="{{ $santri->kabupaten }}" title="{{ $santri->kabupaten }}">{{ $santri->kabupaten }}</option>'
+            );
+            $('.kecamatan_id').append(
+                '<option value="{{ $santri->kecamatan }}" title="{{ $santri->kecamatan }}">{{ $santri->kecamatan }}</option>'
+            );
+            $('.kelurahan_id').append(
+                '<option value="{{ $santri->kelurahan }}" title="{{ $santri->kelurahan }}">{{ $santri->kelurahan }}</option>'
+            );
+            $('.status_santri').append(
+                '<option value="{{ $santri->status }}" title="{{ $santri->status }}">{{ $santri->status }}</option>'
+            );
+            $('.tempat_lahir').append(
+                '<option value="{{ $santri->tempat_lahir }}" title="{{ $santri->tempat_lahir }}">{{ $santri->tempat_lahir }}</option>'
+            );
+            $('.pendidikan_id').append(
+                '<option value="{{ $santri->pend_terakhir }}" title="{{ $santri->pend_terakhir }}">{{ $santri->pend_terakhir }}</option>'
+            );
+            $('.pendidikan_id_ayah').append(
+                '<option value="{{ $wali->pend_terakhir_id_ayah }}" title="{{ $wali->pend_terakhir_id_ayah }}">{{ $wali->pend_terakhir_id_ayah }}</option>'
+            );
+            $('.pend_id_ibu').append(
+                '<option value="{{ $wali->pend_terakhir_id_ibu }}" title="{{ $wali->pend_terakhir_id_ibu }}">{{ $wali->pend_terakhir_id_ibu }}</option>'
+            );
+            $('.tempat_lahir_ayah').append(
+                '<option value="{{ $wali->tempat_lahir_ayah }}" title="{{ $wali->tempat_lahir_ayah }}">{{ $wali->tempat_lahir_ayah }}</option>'
+            );
+            $('.tempat_lahir_ibu').append(
+                '<option value="{{ $wali->tempat_lahir_ibu }}" title="{{ $wali->tempat_lahir_ibu }}">{{ $wali->tempat_lahir_ibu }}</option>'
+            );
 
             $('.status_santri').val("{{ $santri->status }}").trigger('change');
             $('.tempat_lahir').val("{{ $santri->tempat_lahir }}").trigger('change');
@@ -644,7 +692,5 @@
             $('#khos').val(data);
             console.log($('#khos').val(data));
         });
-
-
     </script>
 @endpush

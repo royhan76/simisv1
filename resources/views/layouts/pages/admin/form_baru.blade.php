@@ -60,8 +60,7 @@
                                     {{-- pendidikan_id --}}
                                     <div class="form-group ">
                                         <label for="inputFloatingLabel2" class="placeholder">Pendidikan Terakhir</label>
-                                        <select class="pendidikan_id form-control input-full required"
-                                            name="pendidikan_id"></select>
+                                        <select class="pendidikan_id form-control input-full"   name="pendidikan_id"></select>
                                         <input type="hidden" class="form-control input-full" id="pendidikan_id"
                                             name="pendidikan_id" value="">
                                     </div>
@@ -119,7 +118,7 @@
                                     <div class="form-group ">
                                         <label for="inputFloatingLabel2" class="placeholder">Gang/Rt/Rw</label>
                                         <input id="inputFloatingLabel2" id="jalan" name="jalan" type="text"
-                                            class="form-control input-full" required="">
+                                            class="form-control input-full" >
                                     </div>
                                     <div class="form-group ">
                                         <label for="inputFloatingLabel2" class="placeholder">Nama Wali</label>
@@ -129,19 +128,17 @@
                                     <div class="form-group ">
                                         <label for="inputFloatingLabel2" class="placeholder">No. Tlpn</label>
                                         <input id="inputFloatingLabel2" id="no_tlp" name="no_tlp" type="number"
-                                            class="form-control input-full" required="">
+                                            class="form-control input-full" >
                                     </div>
                                     <div class="form-group ">
                                         <label for="inputFloatingLabel2" class="placeholder">Tahun Masuk</label>
                                         <input id="inputFloatingLabel2" id="tahun_masuk" name="tahun_masuk"
-                                            type="date" class="form-control input-full"
-                                            placeholder="Tahun Masuk">
+                                            type="date" class="form-control input-full" placeholder="Tahun Masuk">
                                     </div>
                                     <div class="form-group ">
                                         <label for="inputFloatingLabel2" class="placeholder">Tahun Keluar</label>
                                         <input id="inputFloatingLabel2" id="tahun_keluar" name="tahun_keluar"
-                                            type="date" class="form-control input-full"
-                                            placeholder="Tahun keluar">
+                                            type="date" class="form-control input-full" placeholder="Tahun keluar">
                                     </div>
                                     <div class="form-group ">
                                         <label for="inputFloatingLabel2" class="placeholder">Dokumen kk</label><br>
@@ -149,7 +146,7 @@
                                     </div>
                                     <div class="form-group ">
                                         <label for="inputFloatingLabel2" class="placeholder">Foto Profil</label><br>
-                                        <input type="file" name="image" id="image" required>
+                                        <input type="file" name="image" id="image" >
                                     </div>
 
                                 </div>

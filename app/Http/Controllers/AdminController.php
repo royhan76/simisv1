@@ -195,28 +195,68 @@ class AdminController extends Controller
     public function update(Request $request, $id)
     {
 
-        $data = Photo::find($id);
+        // $data = Photo::find($id);
 
-        if ($request->hasFile('photo')) {
+        // if ($request->hasFile('photo')) {
 
-            Storage::disk('public')->delete($data->path);
+        //     Storage::disk('public')->delete($data->path);
 
-            $path = $request->file('photo')->store('images', 'public');
+        //     $path = $request->file('photo')->store('images', 'public');
 
-            $data->path = $path;
-        }
-        $dok_kk = DokKkModel::find($id);
-        if ($request->hasFile('dok_kk')) {
+        //     $data->path = $path;
+        // }
+        // $dok_kk = DokKkModel::find($id);
+        // if ($request->hasFile('dok_kk')) {
 
-            Storage::disk('public')->delete($dok_kk->path);
+        //     Storage::disk('public')->delete($dok_kk->path);
 
-            $path = $request->file('dok_kk')->store('images', 'public');
+        //     $path = $request->file('dok_kk')->store('images', 'public');
 
-            $dok_kk->path = $path;
-        }
+        //     $dok_kk->path = $path;
+        // }
 
-        $dok_kk->save();
-        $data->save();
+        // $dok_kk->save();
+        // $data->save();
+
+        // ================= FOTO =================
+$data = Photo::where('santri_id', $id)->first();
+
+if ($request->hasFile('photo')) {
+
+    if ($data && $data->path) {
+        Storage::disk('public')->delete($data->path);
+    }
+
+    $path = $request->file('photo')->store('images', 'public');
+
+    if (!$data) {
+        $data = new Photo();
+        $data->santri_id = $id;
+    }
+
+    $data->path = $path;
+    $data->save();
+}
+
+// ================= DOK KK =================
+$dok_kk = DokKkModel::where('id_santri', $id)->first();
+
+if ($request->hasFile('dok_kk')) {
+
+    if ($dok_kk && $dok_kk->path) {
+        Storage::disk('public')->delete($dok_kk->path);
+    }
+
+    $path = $request->file('dok_kk')->store('images', 'public');
+
+    if (!$dok_kk) {
+        $dok_kk = new DokKkModel();
+        $dok_kk->id_santri = $id;
+    }
+
+    $dok_kk->path = $path;
+    $dok_kk->save();
+}
         $santri = Santris::find($id);
         $wali = WaliModel::find($id);
 
