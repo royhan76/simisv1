@@ -128,35 +128,111 @@ class AdminController extends Controller
     }
 
     public function getSantri(Request $request)
-    {
-        if ($request->ajax()) {
-            $data = Santris::all();
+{
 
-            return DataTables::of($data)
-                ->addColumn(
-                    'action',
-                    function ($data) {
-                        $button = "<div class='btn-group'>";
-                        $button .= '<a href="' . url('/admin', $data->santri_id) . '" class="btn btn-success btn-xs"><i class="la flaticon-search-2"></i></a>';
-                        $button .= '<a href="' . url('/admin/' . $data->santri_id . '/edit') . '" class="btn btn-warning btn-xs"><i class="icon-note"></i></a>';
-                        $button .= '<a href="javascript:void(0)"
-                        data-id="'.$data->santri_id.'"
-                        class="btn-hapus btn btn-danger btn-xs">
-                        <i class="icon-trash"></i>
-                    </a>';
+    if ($request->ajax()) {
 
-                        $button .= "</div>";
-                        return $button;
+        $query = Santris::query()
 
-                    }
-                )
-                ->addIndexColumn()
-                ->rawColumns(['action'])
-                ->make(true);
+        ->leftJoin('thn_masuk', 'santri.santri_id', '=', 'thn_masuk.id_santri')
+
+        ->select(
+            'santri.*',
+            'thn_masuk.thn_masuk'
+        );
+
+
+        /*
+        =========================
+        FILTER STATUS DATA
+        =========================
+        */
+
+        if ($request->status == 'lengkap') {
+
+            $query->whereNotNull('no_induk')
+                  ->whereNotNull('kk')
+                  ->whereNotNull('nik')
+                  ->whereNotNull('tempat_lahir')
+                  ->whereNotNull('tgl_lahir')
+                  ->whereNotNull('nama')
+                  ->whereNotNull('khos')
+                  ->whereNotNull('status')
+                  ->whereNotNull('jalan')
+                  ->whereNotNull('kelurahan')
+                  ->whereNotNull('kecamatan')
+                  ->whereNotNull('kabupaten')
+                  ->whereNotNull('provinsi');
+
         }
 
-        // return view('layouts.pages.santri.detail');
+        if ($request->status == 'belum') {
+
+            $query->where(function($q){
+
+                 $q->whereNull('no_induk')
+                  ->orWhereNull('kk')
+                  ->orWhereNull('nik')
+                  ->orWhereNull('tempat_lahir')
+                  ->orWhereNull('tgl_lahir')
+                  ->orWhereNull('nama')
+                  ->orWhereNull('khos')
+                  ->orWhereNull('status')
+                  ->orWhereNull('jalan')
+                  ->orWhereNull('kelurahan')
+                  ->orWhereNull('kecamatan')
+                  ->orWhereNull('kabupaten')
+                  ->orWhereNull('provinsi');
+
+            });
+
+        }
+
+
+        /*
+        =========================
+        FILTER TAHUN MASUK
+        =========================
+        */
+
+        if ($request->tahun) {
+
+            $query->whereYear('thn_masuk.thn_masuk', $request->tahun);
+
+        }
+
+
+        return DataTables::of($query)
+
+        ->addColumn('action', function ($data) {
+
+            $button = "<div class='btn-group'>";
+
+            $button .= '<a href="' . url('/admin', $data->santri_id) . '" class="btn btn-success btn-xs">
+            <i class="la flaticon-search-2"></i></a>';
+
+            $button .= '<a href="' . url('/admin/' . $data->santri_id . '/edit') . '" class="btn btn-warning btn-xs">
+            <i class="icon-note"></i></a>';
+
+            $button .= '<a href="javascript:void(0)"
+                data-id="'.$data->santri_id.'"
+                class="btn-hapus btn btn-danger btn-xs">
+                <i class="icon-trash"></i>
+            </a>';
+
+            $button .= "</div>";
+
+            return $button;
+
+        })
+
+        ->addIndexColumn()
+        ->rawColumns(['action'])
+        ->make(true);
+
     }
+
+}
 
 
     public function show($id)
