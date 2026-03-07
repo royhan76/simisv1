@@ -38,19 +38,19 @@
                                     <div class="form-group ">
                                         <label for="inputFloatingLabel2" class="placeholder">KK</label>
                                         <input id="inputFloatingLabel2" id="kk" name="kk" type="text"
-                                            class="form-control input-full" required="">
+                                            class="form-control input-full" >
                                     </div>
                                     <div class="form-group ">
                                         <label for="inputFloatingLabel2" class="placeholder">NIK</label>
                                         <input id="inputFloatingLabel2" id="nik" name="nik" type="text"
-                                            class="form-control input-full" required="">
+                                            class="form-control input-full" >
                                     </div>
                                     <div class="form-group ">
                                         <label for="inputFloatingLabel2" class="placeholder">Tempat lahir</label>
                                         <select class="tempat_lahir form-control input-full required"
                                             name="tempat_lahir"></select>
                                         <input type="hidden" class="form-control input-full" id="tempat_lahir"
-                                            name="tempat_lahir" value="">
+                                            name="tempat_lahir" value="" required="">
                                     </div>
                                     <div class="form-group ">
                                         <label for="inputFloatingLabel2" class="placeholder">Tanggal Lahir</label>

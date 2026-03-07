@@ -46,8 +46,8 @@
                                     <div class="form-group ">
                                         <label for="inputFloatingLabel2" class="placeholder">No. Induk</label>
                                         <input id="inputFloatingLabel2" id="no_induk" name="no_induk" type="text"
-                                            class="form-control input-full"  required=""
-                                            value="{{ $santri->santri_id }}">
+                                            class="form-control input-full"  required="" readonly="readonly"
+                                            value="{{ $santri->no_induk }}">
                                     </div>
                                     <div class="form-group ">
                                         <label for="inputFloatingLabel2" class="placeholder">Nama Lengkap</label>
@@ -69,13 +69,13 @@
                                         <select class="tempat_lahir form-control input-full required"
                                             name="tempat_lahir"></select>
                                         <input type="hidden" class="form-control input-full" id="tempat_lahir"
-                                            name="tempat_lahir" value="">
+                                            name="tempat_lahir" value="" required="">
                                     </div>
                                     <div class="form-group ">
                                         <label for="inputFloatingLabel2" class="placeholder">Tanggal Lahir</label>
                                         <input type="text" id="tgl_lahir" name="tgl_lahir"
                                             class="form-control required input-full tanggal" placeholder="Tanggal Lahir"
-                                            value="{{ $tanggal_lahir }}" onchange="#">
+                                            value="{{ $tanggal_lahir }}" onchange="#" required="">
                                     </div>
                                     {{-- pendidikan_id --}}
 
@@ -145,7 +145,7 @@
                                     <div class="form-group ">
                                         <label for="inputFloatingLabel2" class="placeholder">Nama Wali</label>
                                         <input id="inputFloatingLabel2" id="ayah" name="ayah" type="text"
-                                            class="form-control input-full" required="" value="{{ $wali->ayah ?? '' }}">
+                                            class="form-control input-full"  value="{{ $wali->ayah ?? '' }}">
                                     </div>
                                     <div class="form-group ">
                                         <label for="inputFloatingLabel2" class="placeholder">No. Tlpn</label>

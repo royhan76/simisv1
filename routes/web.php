@@ -22,6 +22,7 @@ Route::group(
     Route::get('form_lama', 'AdminController@createSantriLama')->name('form_lama');
 
     Route::post('add_santri_baru', 'AdminController@store')->name('add_santri_baru');
+    Route::get('/exportSantri','AdminController@exportSantri');
 
     // 🔥 TARUH DELETE SEBELUM GET {id}
     Route::delete('{id}', 'AdminController@destroy')->name('santri.destroy');

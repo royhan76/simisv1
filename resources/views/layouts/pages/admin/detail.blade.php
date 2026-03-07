@@ -5,6 +5,8 @@
     $tLahir_ayah = str_replace('KABUPATEN', '', $wali->tempat_lahir_ayah);
     $tLahir_ibu = str_replace('KABUPATEN', '', $wali->tempat_lahir_ibu);
     $tanggal_lahir = str_replace('00:00:00', '', $santri->tgl_lahir);
+    $thn_masuk_santri =str_replace('00:00:00', '', $thn_masuk->thn_masuk);
+    $thn_keluar_santri =str_replace('00:00:00', '', $thn_keluar->thn_keluar);
 
     $photo = $foto ? str_replace('public', '', $foto->path) : 'default.png';
 @endphp
@@ -60,11 +62,13 @@
                                 <h5>Pend. Terakhir: {{ $santri->pend_terakhir }}</h5>
                             </div>
                             <div class="col-md-6">
-                                <h5>Provinsi : {{ $santri->provinsi }}</h5>
+                                <h5 >Provinsi : {{ $santri->provinsi }}</h5>
                                 <h5>Kabupaten : {{ $santri->kabupaten }}</h5>
                                 <h5>Kecamatan : {{ $santri->kecamatan }}</h5>
                                 <h5>Kelurahan/Desa : {{ $santri->kelurahan }}</h5>
                                 <h5>Jl/Gang : {{ $santri->jalan }}</h5>
+                                <h5>Tahun Masuk : {{ $thn_masuk_santri }}</h5>
+                                <h5>Tahun Keluar : {{ $thn_keluar_santri }}</h5>
 
                             </div>
                         </div>
