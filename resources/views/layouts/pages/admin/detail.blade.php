@@ -2,11 +2,13 @@
 
 @php
     $tLahir = str_replace('KABUPATEN', '', $santri->tempat_lahir);
-    $tLahir_ayah = str_replace('KABUPATEN', '', $wali->tempat_lahir_ayah);
-    $tLahir_ibu = str_replace('KABUPATEN', '', $wali->tempat_lahir_ibu);
-    $tanggal_lahir = str_replace('00:00:00', '', $santri->tgl_lahir);
-    $thn_masuk_santri =str_replace('00:00:00', '', $thn_masuk->thn_masuk);
-    $thn_keluar_santri =str_replace('00:00:00', '', $thn_keluar->thn_keluar);
+    $tLahir_ayah = str_replace('KABUPATEN', '', $wali->tempat_lahir_ayah ?? '');
+    $tLahir_ibu = str_replace('KABUPATEN', '', $wali->tempat_lahir_ibu ?? '');
+
+    $tanggal_lahir = str_replace('00:00:00', '', $santri->tgl_lahir ?? '');
+
+    $thn_masuk_santri = str_replace('00:00:00', '', $thn_masuk?->thn_masuk ?? '');
+    $thn_keluar_santri = str_replace('00:00:00', '', $thn_keluar?->thn_keluar ?? '');
 
     $photo = $foto ? str_replace('public', '', $foto->path) : 'default.png';
 @endphp
