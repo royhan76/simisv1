@@ -22,6 +22,7 @@ Route::group(
     Route::get('form_lama', 'AdminController@createSantriLama')->name('form_lama');
 
     Route::post('add_santri_baru', 'AdminController@store')->name('add_santri_baru');
+    Route::get('/exportSantri','AdminController@exportSantri');
 
     // 🔥 TARUH DELETE SEBELUM GET {id}
     Route::delete('{id}', 'AdminController@destroy')->name('santri.destroy');
@@ -58,6 +59,9 @@ Route::get('kecamatan', 'AlamatsController@selectKecamatan');
 Route::get('alamat', 'AlamatsController@selectKelurahan');
 Route::get('pendidikan', 'PendidikanController@selectPendidikan');
 Route::get('status_santri', 'StatussantriController@StatussantriController');
+Route::get('status_mukim', 'StatusMukimController@StatusMukimController');
+Route::get('khos', 'KhosController@khos');
+
 
 Route::group(['middleware' => 'auth'], function () {
     Route::prefix('santri')->group(function () {

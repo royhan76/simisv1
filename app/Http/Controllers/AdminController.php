@@ -3,12 +3,17 @@
 namespace App\Http\Controllers;
 
 use App\Photo;
+use App\DokKkModel;
 use App\Santris;
 use App\WaliModel;
+use App\ThnKeluarModel;
+use App\ThnMasukModel;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use \Yajra\Datatables\Datatables;
+use App\Exports\SantriExport;
+use Maatwebsite\Excel\Facades\Excel;
 
 class AdminController extends Controller
 {
@@ -49,6 +54,8 @@ class AdminController extends Controller
     public function store(Request $request)
     {
 
+        // dd($request);
+
         $tgl_lahir_ayah = date('Y-m-d', strtotime($request->tgl_lahir_ayah));
         $tgl_lahir_ibu = date('Y-m-d', strtotime($request->tgl_lahir_ibu));
         $tgl_lahir = date('Y-m-d', strtotime($request->tgl_lahir));
@@ -57,18 +64,18 @@ class AdminController extends Controller
 
                 // 'santri_id','ayah_id','ayah_nik','ayah','pend_terakhir_id_ayah','ttl_ayah','pekerjaan_ayah','nik_ibu','ibu','ttl_ibu','pekerjaan_ibu','pend_terakhir_id_ibu'
                 'santri_id'  => $request->nik,
-                'ayah_nik' => $request->nik_ayah,
+                // 'ayah_nik' => $request->nik_ayah,
                 'ayah' => $request->ayah,
-                'pend_terakhir_id_ayah' => $request->pendidikan_id_ayah,
-                'tempat_lahir_ayah' => $request->tempat_lahir_ayah,
-                'tgl_lahir_ayah' => $tgl_lahir_ayah,
-                'pekerjaan_ayah' => $request->pekerjaan_ayah,
-                'nik_ibu' => $request->nik_ibu,
-                'ibu' => $request->ibu,
-                'tempat_lahir_ibu' => $request->tempat_lahir_ibu,
-                'tgl_lahir_ibu' => $tgl_lahir_ibu,
-                'pekerjaan_ibu' => $request->pekerjaan_ibu,
-                'pend_terakhir_id_ibu' => $request->pend_id_ibu,
+                // 'pend_terakhir_id_ayah' => $request->pendidikan_id_ayah,
+                // 'tempat_lahir_ayah' => $request->tempat_lahir_ayah,
+                // 'tgl_lahir_ayah' => $tgl_lahir_ayah,
+                // 'pekerjaan_ayah' => $request->pekerjaan_ayah,
+                // 'nik_ibu' => $request->nik_ibu,
+                // 'ibu' => $request->ibu,
+                // 'tempat_lahir_ibu' => $request->tempat_lahir_ibu,
+                // 'tgl_lahir_ibu' => $tgl_lahir_ibu,
+                // 'pekerjaan_ibu' => $request->pekerjaan_ibu,
+                // 'pend_terakhir_id_ibu' => $request->pend_id_ibu,
             ]
         );
 
@@ -77,7 +84,6 @@ class AdminController extends Controller
             'no_induk' => $request->no_induk,
             'kk' => $request->kk,
             'nik' => $request->nik,
-            'nisn' => $request->nisn,
             'tempat_lahir'  => $request->tempat_lahir,
             'tgl_lahir'  => $tgl_lahir,
             'nama' => $request->nama_lengkap,
@@ -88,9 +94,8 @@ class AdminController extends Controller
             "kecamatan" => $request->kecamatan_id,
             "kabupaten" => $request->kabupaten_id,
             "provinsi" => $request->propinsi_id,
-            'kodepos' => $request->kode_pos,
             'pend_terakhir' => $request->pendidikan_id,
-            'wali_id' => $request->nik_ayah
+            'no_tlp' => $request->no_tlp,
         ]);
 
         $validatedData = $request->validate([
@@ -105,59 +110,131 @@ class AdminController extends Controller
             'path' => $path,
             'santri_id' => $request->nik,
         ]);
-
-        // $validatedData = $request->validate([
-        //     'image' => 'required|image|mimes:jpg,png,jpeg,gif,svg|max:2048',
-
-        // ]);
-
-        // $insertPhotos = Photo::create([
-        //     'name' => $request->file('image')->getClientOriginalName(),
-        //     'path' => $request->file('image')->getClientOriginalName(),
-        //     'santri_id' => $request->nik,
-        // ]);
-        // $dataPhoto = ([
-        //     'name' => $request->file('image')->getClientOriginalName(),
-        //     'path' => $request->file('image')->store('public/images'),
-        //     'santri_id' => $request->nik,
-        // ]);
-
-
-        // $save = new Photo();
+        DokKkModel::create([
+            'name' => $request->file('image')->getClientOriginalName(),
+            'path' => $path,
+            'id_santri' => $request->nik,
+        ]);
+        ThnMasukModel::create([
+            'id'=>$request->nik,
+            'id_santri'=>$request->nik,
+            'thn_masuk'=>$request->tahun_masuk,
+        ]);
+        ThnKeluarModel::create([
+            'id'=>$request->nik,
+            'id_santri'=>$request->nik,
+            'thn_keluar'=>$request->tahun_keluar,
+        ]);
 
         return redirect()->route('admin');
     }
 
     public function getSantri(Request $request)
-    {
-        if ($request->ajax()) {
-            $data = Santris::all();
+{
 
-            return DataTables::of($data)
-                ->addColumn(
-                    'action',
-                    function ($data) {
-                        $button = "<div class='btn-group'>";
-                        $button .= '<a href="' . url('/admin', $data->santri_id) . '" class="btn btn-success btn-xs"><i class="la flaticon-search-2"></i></a>';
-                        $button .= '<a href="' . url('/admin/' . $data->santri_id . '/edit') . '" class="btn btn-warning btn-xs"><i class="icon-note"></i></a>';
-                        $button .= '<a href="javascript:void(0)"
-                        data-id="'.$data->santri_id.'"
-                        class="btn-hapus btn btn-danger btn-xs">
-                        <i class="icon-trash"></i>
-                    </a>';
+    if ($request->ajax()) {
 
-                        $button .= "</div>";
-                        return $button;
+        $query = Santris::query()
 
-                    }
-                )
-                ->addIndexColumn()
-                ->rawColumns(['action'])
-                ->make(true);
+        ->leftJoin('thn_masuk', 'santri.santri_id', '=', 'thn_masuk.id_santri')
+
+        ->select(
+            'santri.*',
+            'thn_masuk.thn_masuk'
+        );
+
+
+        /*
+        =========================
+        FILTER STATUS DATA
+        =========================
+        */
+
+        if ($request->status == 'lengkap') {
+
+            $query->whereNotNull('no_induk')
+                  ->whereNotNull('kk')
+                  ->whereNotNull('nik')
+                  ->whereNotNull('tempat_lahir')
+                  ->whereNotNull('tgl_lahir')
+                  ->whereNotNull('nama')
+                  ->whereNotNull('khos')
+                  ->whereNotNull('status')
+                  ->whereNotNull('jalan')
+                  ->whereNotNull('kelurahan')
+                  ->whereNotNull('kecamatan')
+                  ->whereNotNull('kabupaten')
+                  ->whereNotNull('provinsi');
+
         }
 
-        // return view('layouts.pages.santri.detail');
+        if ($request->status == 'belum') {
+
+            $query->where(function($q){
+
+                 $q->whereNull('no_induk')
+                  ->orWhereNull('kk')
+                  ->orWhereNull('nik')
+                  ->orWhereNull('tempat_lahir')
+                  ->orWhereNull('tgl_lahir')
+                  ->orWhereNull('nama')
+                  ->orWhereNull('khos')
+                  ->orWhereNull('status')
+                  ->orWhereNull('jalan')
+                  ->orWhereNull('kelurahan')
+                  ->orWhereNull('kecamatan')
+                  ->orWhereNull('kabupaten')
+                  ->orWhereNull('provinsi');
+
+            });
+
+        }
+
+
+        /*
+        =========================
+        FILTER TAHUN MASUK
+        =========================
+        */
+
+        if ($request->tahun) {
+
+            $query->whereYear('thn_masuk.thn_masuk', $request->tahun);
+
+        }
+
+
+        return DataTables::of($query)
+
+        ->addColumn('action', function ($data) {
+
+            $button = "<div class='btn-group'>";
+
+            $button .= '<a href="' . url('/admin', $data->santri_id) . '" class="btn btn-success btn-xs">
+            <i class="la flaticon-search-2"></i></a>';
+
+            $button .= '<a href="' . url('/admin/' . $data->santri_id . '/edit') . '" class="btn btn-warning btn-xs">
+            <i class="icon-note"></i></a>';
+
+            $button .= '<a href="javascript:void(0)"
+                data-id="'.$data->santri_id.'"
+                class="btn-hapus btn btn-danger btn-xs">
+                <i class="icon-trash"></i>
+            </a>';
+
+            $button .= "</div>";
+
+            return $button;
+
+        })
+
+        ->addIndexColumn()
+        ->rawColumns(['action'])
+        ->make(true);
+
     }
+
+}
 
 
     public function show($id)
@@ -166,17 +243,22 @@ class AdminController extends Controller
         $wali = WaliModel::where('santri_id', $id)->first();
 
         $foto = Photo::where('santri_id', $id)->first();
-
-        return view('layouts.pages.admin.detail')->with(compact('wali', 'santri', 'foto'));
+        $thn_masuk = ThnMasukModel::where('id_santri', $id)->first();
+        $thn_keluar = ThnKeluarModel::where('id_santri', $id)->first();
+        $dok_kk =DokKkModel::where('id_santri', $id)->first();
+        return view('layouts.pages.admin.detail')->with(compact('wali', 'santri', 'foto','thn_masuk', 'thn_keluar','dok_kk'));
     }
 
     public function edit($id)
     {
         $santri = Santris::where('santri_id', $id)->first();
         $wali = WaliModel::where('santri_id', $id)->first();
+        $thn_masuk = ThnMasukModel::where('id_santri', $id)->first();
+        $thn_keluar = ThnKeluarModel::where('id_santri', $id)->first();
 
         $foto = Photo::where('santri_id', $id)->first();
-        return view('layouts.pages.admin.edit')->with(compact('santri', 'wali', 'foto'));
+        $dok_kk =DokKkModel::where('id_santri', $id)->first();
+        return view('layouts.pages.admin.edit')->with(compact('santri', 'wali', 'foto','thn_masuk', 'thn_keluar','dok_kk'));
     }
 
     /**
@@ -188,21 +270,47 @@ class AdminController extends Controller
      */
 
 
-    public function update(Request $request, $id)
-    {
+public function update(Request $request, $id)
+{
 
-        $data = Photo::find($id);
+    $data = Photo::where('santri_id', $id)->first();
 
-        if ($request->hasFile('photo')) {
+    if ($request->hasFile('photo')) {
 
+        if ($data && $data->path) {
             Storage::disk('public')->delete($data->path);
-
-            $path = $request->file('photo')->store('images', 'public');
-
-            $data->path = $path;
         }
 
+        $path = $request->file('photo')->store('images', 'public');
+
+        if (!$data) {
+            $data = new Photo();
+            $data->santri_id = $id;
+        }
+
+        $data->path = $path;
         $data->save();
+    }
+
+// ================= DOK KK =================
+    $dok_kk = DokKkModel::where('id_santri', $id)->first();
+
+    if ($request->hasFile('dok_kk')) {
+
+        if ($dok_kk && $dok_kk->path) {
+            Storage::disk('public')->delete($dok_kk->path);
+        }
+
+        $path = $request->file('dok_kk')->store('images', 'public');
+
+        if (!$dok_kk) {
+            $dok_kk = new DokKkModel();
+            $dok_kk->id_santri = $id;
+        }
+
+        $dok_kk->path = $path;
+        $dok_kk->save();
+    }
         $santri = Santris::find($id);
         $wali = WaliModel::find($id);
 
@@ -297,4 +405,18 @@ class AdminController extends Controller
     {
        return view('layouts.pages.admin.pengguna');
     }
+
+    public function exportSantri(Request $request)
+{
+    // dd($request->tahun);
+
+    $status = $request->status;
+    $tahun  = $request->tahun;
+
+    return Excel::download(
+        new SantriExport($status,$tahun),
+        'data_santri.xlsx'
+    );
+
+}
 }

@@ -1,9 +1,16 @@
 @extends('master')
 
 @php
+    use Carbon\Carbon;
 
-    $tanggal_lahir = str_replace('00:00:00', '', $santri->tgl_lahir);
-    $photo = str_replace("public", "", $foto->path);
+    $tanggal_lahir = $santri->tgl_lahir ? Carbon::parse($santri->tgl_lahir)->format('Y-m-d') : '';
+
+    $photo = $foto?->path ?? null;
+    $dokKkPath = $dok_kk?->path ?? null;
+
+    $tahunMasuk = $santri->thn_masuk ? Carbon::parse($santri->thn_masuk)->format('Y-m-d') : '';
+
+    $tahunKeluar = $santri->thn_keluar ? Carbon::parse($santri->thn_keluar)->format('Y-m-d') : '';
 @endphp
 
 
@@ -29,7 +36,8 @@
                 <div class="card full-height">
                     <div class="card-body">
 
-                        <form action="{{ url('/admin/update/'. $santri->santri_id) }}" method="POST" id="form_edit" class="form_edit"  enctype="multipart/form-data">
+                        <form action="{{ url('/admin/update/' . $santri->santri_id) }}" method="POST" id="form_edit"
+                            class="form_edit" enctype="multipart/form-data">
                             @csrf
                             @method('PUT')
                             <div class="row">
@@ -38,34 +46,21 @@
                                     <div class="form-group ">
                                         <label for="inputFloatingLabel2" class="placeholder">No. Induk</label>
                                         <input id="inputFloatingLabel2" id="no_induk" name="no_induk" type="text"
-                                            class="form-control input-full" readonly="readonly" required=""
-                                            value="{{ $santri->santri_id }}">
+                                            class="form-control input-full"  required="" readonly="readonly"
+                                            value="{{ $santri->no_induk }}">
                                     </div>
                                     <div class="form-group ">
                                         <label for="inputFloatingLabel2" class="placeholder">Nama Lengkap</label>
                                         <input id="inputFloatingLabel2" id="nama_lengkap" name="nama_lengkap" type="text"
                                             class="form-control input-full" required="" value="{{ $santri->nama }}">
                                     </div>
-
                                     <div class="form-group ">
-                                        <label for="inputFloatingLabel2" class="placeholder">Status Santri</label>
-                                        <select class="status_santri form-control input-full required"
-                                            name="status_santri"></select>
-                                        <input type="hidden" class="form-control input-full" id="status_santri"
-                                            name="status_santri" value="">
-                                    </div>
-                                    <div class="form-group ">
-                                        <label for="inputFloatingLabel2" class="placeholder">Khos</label>
-                                        <input id="inputFloatingLabel2" id="khos" name="khos" type="text"
-                                            class="form-control input-full" required="" value="{{ $santri->khos }}">
-                                    </div>
-                                    <div class="form-group ">
-                                        <label for="inputFloatingLabel2" class="placeholder">Kk</label>
+                                        <label for="inputFloatingLabel2" class="placeholder">KK</label>
                                         <input id="inputFloatingLabel2" id="kk" name="kk" type="text"
                                             class="form-control input-full" required="" value="{{ $santri->kk }}">
                                     </div>
                                     <div class="form-group ">
-                                        <label for="inputFloatingLabel2" class="placeholder">Nik</label>
+                                        <label for="inputFloatingLabel2" class="placeholder">NIK</label>
                                         <input id="inputFloatingLabel2" id="nik" name="nik" type="text"
                                             class="form-control input-full" required="" value="{{ $santri->nik }}">
                                     </div>
@@ -74,19 +69,13 @@
                                         <select class="tempat_lahir form-control input-full required"
                                             name="tempat_lahir"></select>
                                         <input type="hidden" class="form-control input-full" id="tempat_lahir"
-                                            name="tempat_lahir" value="">
+                                            name="tempat_lahir" value="" required="">
                                     </div>
                                     <div class="form-group ">
                                         <label for="inputFloatingLabel2" class="placeholder">Tanggal Lahir</label>
                                         <input type="text" id="tgl_lahir" name="tgl_lahir"
                                             class="form-control required input-full tanggal" placeholder="Tanggal Lahir"
-                                            value="{{ date('Y-m-d', strtotime($santri->tgl_lahir)) }}" onchange="#">
-                                    </div>
-
-                                    <div class="form-group ">
-                                        <label for="inputFloatingLabel2" class="placeholder">Nisn</label>
-                                        <input id="inputFloatingLabel2" id="nisn" name="nisn" type="text"
-                                            class="form-control input-full" required="" value="{{$santri->nisn}}">
+                                            value="{{ $tanggal_lahir }}" onchange="#" required="">
                                     </div>
                                     {{-- pendidikan_id --}}
 
@@ -98,10 +87,24 @@
                                             name="pendidikan_id" value="{{ $santri->pend_terakhir }}">
                                     </div>
 
+
                                 </div>
                                 {{-- tengah --}}
                                 <div class="col-md-4 mt-3">
                                     <div class="form-group ">
+                                        <div class="form-group ">
+                                            <label for="inputFloatingLabel2" class="placeholder">Khos</label>
+                                            <select class="khos form-control input-full required" name="khos"></select>
+                                            <input type="hidden" class="form-control input-full" id="khos"
+                                                name="khos" value="{{ $santri->khos }}">
+                                        </div>
+                                        <div class="form-group ">
+                                            <label for="inputFloatingLabel2" class="placeholder">Status Santri</label>
+                                            <select class="status_santri form-control input-full required"
+                                                name="status_santri"></select>
+                                            <input type="hidden" class="form-control input-full" id="status_santri"
+                                                name="status_santri" value="">
+                                        </div>
                                         <label for="inputFloatingLabel2" class="placeholder">Provinsi</label>
                                         <select class="propinsi_id form-control input-full required" name="propinsi_id"
                                             style=" height: 62px;"></select>
@@ -130,121 +133,71 @@
                                         <input type="hidden" class="form-control input-full" id="kelurahan_id"
                                             name="kelurahan_id">
                                     </div>
-                                    <div class="form-group ">
-                                        <label for="inputFloatingLabel2" class="placeholder">Gang/Rt/Rw</label>
-                                        <input id="inputFloatingLabel2" id="jalan" name="jalan" type="text"
-                                            class="form-control input-full" required="" value="{{$santri->jalan}}">
-                                    </div>
-                                    <div class="form-group ">
-                                        <label for="inputFloatingLabel2" class="placeholder">Kode Pos</label>
-                                        <input id="inputFloatingLabel2" id="kode_pos" name="kode_pos" type="text"
-                                            class="form-control input-full" required="" value="{{$santri->kodepos}}">
-                                    </div>
-
-                                    <div class="form-group ">
-                                        <label for="inputFloatingLabel2" class="placeholder">Ayah</label>
-                                        <input id="inputFloatingLabel2" id="ayah" name="ayah" type="text"
-                                            class="form-control input-full" required="" value="{{$wali->ayah}}">
-                                    </div>
-                                    <div class="form-group ">
-                                        <label for="inputFloatingLabel2" class="placeholder">Nik Ayah</label>
-                                        <input id="inputFloatingLabel2" id="nik_ayah" name="nik_ayah" type="text"
-                                            class="form-control input-full" required="" value="{{$wali->ayah_nik}}">
-                                    </div>
-                                    <div class="form-group ">
-                                        <label for="inputFloatingLabel2" class="placeholder">Pekerjaan Ayah</label>
-                                        <input id="inputFloatingLabel2" id="pekerjaan_ayah" name="pekerjaan_ayah"
-                                            type="text" class="form-control input-full" required="" value="{{$wali->pekerjaan_ayah}}">
-                                    </div>
-                                    <div class="form-group ">
-                                        <label for="inputFloatingLabel2" class="placeholder">Tempat lahir ayah</label>
-                                        <select class="tempat_lahir_ayah form-control input-full required"
-                                            name="tempat_lahir_ayah"></select>
-                                        <input type="hidden" class="form-control input-full" id="tempat_lahir_ayah"
-                                            name="tempat_lahir_ayah" value="">
-                                    </div>
                                 </div>
                                 {{-- kiri --}}
                                 <div class="col-md-4 mt-3">
                                     <div class="form-group ">
-                                        <label for="inputFloatingLabel2" class="placeholder">Tanggal Lahir ayah</label>
-                                        <input id="inputFloatingLabel2" id="tgl_lahir_ayah" name="tgl_lahir_ayah"
-                                            type="text" class="form-control input-full tanggal" required=""
-                                            placeholder="tanggal lahir"  value="{{ date('Y-m-d', strtotime($wali->tgl_lahir_ayah)) }}">
-                                    </div>
-                                    {{-- pendidikan_id_ayah --}}
-                                    <div class="form-group ">
-                                        <label for="inputFloatingLabel2" class="placeholder">Pendidikan Terakhir ayah</label>
-                                        <select class="pendidikan_id_ayah form-control input-full "
-                                            name="pendidikan_id_ayah"></select>
-                                        <input type="hidden" class="form-control input-full" id="pendidikan_id_ayah"
-                                            name="pendidikan_id_ayah" >
-                                    </div>
-                                    <div class="form-group ">
-                                        <label for="inputFloatingLabel2" class="placeholder">Ibu</label>
-                                        <input id="inputFloatingLabel2" id="ibu" name="ibu" type="text"
-                                            class="form-control input-full" required="" value="{{$wali->ibu}}">
-                                    </div>
-                                    <div class="form-group ">
-                                        <label for="inputFloatingLabel2" class="placeholder">Nik Ibu</label>
-                                        <input id="inputFloatingLabel2" id="nik_ibu" name="nik_ibu" type="text"
-                                            class="form-control input-full" required="" value="{{$wali->nik_ibu}}">
-                                    </div>
-                                    <div class="form-group ">
-                                        <label for="inputFloatingLabel2" class="placeholder">Pekerjaan Ibu</label>
-                                        <input id="inputFloatingLabel2" id="pekerjaan_ibu" name="pekerjaan_ibu"
-                                            type="text" class="form-control input-full" required="" value="{{$wali->pekerjaan_ibu}}">
+                                        <label for="inputFloatingLabel2" class="placeholder">Gang/Rt/Rw</label>
+                                        <input id="inputFloatingLabel2" id="jalan" name="jalan" type="text"
+                                            class="form-control input-full"  value="{{ $santri->jalan }}">
                                     </div>
 
                                     <div class="form-group ">
-                                        <label for="inputFloatingLabel2" class="placeholder">Tempat lahir ibu</label>
-                                        <select class="tempat_lahir_ibu form-control input-full required"
-                                            name="tempat_lahir_ibu"></select>
-                                        <input type="hidden" class="form-control input-full" id="tempat_lahir_ibu"
-                                            name="tempat_lahir_ibu" >
+                                        <label for="inputFloatingLabel2" class="placeholder">Nama Wali</label>
+                                        <input id="inputFloatingLabel2" id="ayah" name="ayah" type="text"
+                                            class="form-control input-full"  value="{{ $wali->ayah ?? '' }}">
                                     </div>
                                     <div class="form-group ">
-                                        <label for="inputFloatingLabel2" class="placeholder">Tanggal Lahir Ibu</label>
-                                        <input id="inputFloatingLabel2" id="tgl_lahir_ibu" name="tgl_lahir_ibu"
-                                            type="text" class="form-control input-full tanggal" required=""
-                                            placeholder="tanggal lahir"  value="{{ date('Y-m-d', strtotime($wali->tgl_lahir_ibu)) }}">
+                                        <label for="inputFloatingLabel2" class="placeholder">No. Tlpn</label>
+                                        <input id="inputFloatingLabel2" id="no_tlp" name="no_tlp" type="number"
+                                            class="form-control input-full"
+                                            value="{{ $santri->no_tlp }}">
                                     </div>
-                                    {{-- pend_id_ibu --}}
                                     <div class="form-group ">
-                                        <label for="inputFloatingLabel2" class="placeholder">Pendidikan Terakhir Ibu</label>
-                                        <select class="pend_id_ibu form-control input-full " name="pend_id_ibu"></select>
-                                        <input type="hidden" class="form-control input-full" id="pend_id_ibu"
-                                            name="pend_id_ibu">
+                                        <label for="inputFloatingLabel2" class="placeholder">Tahun Masuk</label>
+                                        <input id="tahun_masuk" name="tahun_masuk" type="date"
+                                            class="form-control input-full" value="{{ $tahunMasuk }}"
+                                            placeholder="Tahun Masuk">
                                     </div>
-
                                     <div class="form-group ">
-                                        <label for="inputFloatingLabel2" class="placeholder">Photo</label><br>
-                                        <input type="file" name="photo">
-
-                                        {{-- <div class="my-2">
-                                            <input type="file" name="image" id="image" accept="image/*" class="form-control @error('file') is-invalid @enderror">
-                                            <input type="text" name="hidden_image" id="hidden_image" value="{{$foto->path}}">
-                                            @error('file')
-                                              <div class="invalid-feedback">{{ $message }}</div>
-                                            @enderror
-                                          </div> --}}
+                                        <label for="inputFloatingLabel2" class="placeholder">Tahun Keluar</label>
+                                        <input id="tahun_keluar" name="tahun_keluar" type="date"
+                                            class="form-control input-full" value="{{ $tahunKeluar }}"
+                                            placeholder="Tahun Keluar">
                                     </div>
                                     <div class="form-group">
-                                        <div class="avatar avatar-xxl">
-                                            {{-- {{$foto->path}} --}}
-                                            {{-- <img  class="avatar-img rounded-circle"> --}}
-                                            <img src="{{ asset('storage/images/'.$photo) }}" alt="..." class="avatar-img rounded-circle">
-                                        </div>
+                                        <label class="placeholder">Dokumen KK</label><br>
+
+                                        @if ($dokKkPath)
+                                            <div class="mb-2">
+                                                <a href="{{ asset('storage/' . $dokKkPath) }}" target="_blank"
+                                                    class="btn btn-sm btn-info">
+                                                    Lihat Dokumen KK
+                                                </a>
+                                            </div>
+                                        @endif
+
+                                        <input type="file" name="dok_kk" id="dok_kk" class="form-control">
                                     </div>
+                                    <div class="form-group">
+                                        <label class="placeholder">Photo</label><br>
 
+                                        @if ($photo)
+                                            <div class="mb-2">
+                                                <img src="{{ asset('storage/' . $photo) }}" width="150"
+                                                    class="img-thumbnail">
+                                            </div>
+                                        @endif
+
+                                        <input type="file" name="photo" class="form-control">
+                                    </div>
                                 </div>
-
                             </div>
                             <div class="row">
                                 <div class="col-md-6">
                                     <div class="form-group form-inline">
                                         <div class="btn-group" style="margin-top: 20px;">
-                                            <a id="btn-batal" href="{{url('admin')}}"
+                                            <a id="btn-batal" href="{{ url('admin') }}"
                                                 class="btn btn-lg btn-primary">Batal</a>
                                             <button id="btn-simpan" type="submit"
                                                 class="btn btn-lg btn-success">Simpan</button>
@@ -260,7 +213,6 @@
             </div>
         </div>
     </div>
-
 @endsection
 
 
@@ -268,17 +220,39 @@
     <script type="text/javascript">
         $(document).ready(function() {
 
-            $('.propinsi_id').append('<option value="{{ $santri->provinsi }}" title="{{ $santri->provinsi }}">{{ $santri->provinsi }}</option>');
-            $('.kabupaten_id').append('<option value="{{ $santri->kabupaten }}" title="{{ $santri->kabupaten }}">{{ $santri->kabupaten }}</option>');
-            $('.kecamatan_id').append('<option value="{{ $santri->kecamatan }}" title="{{ $santri->kecamatan }}">{{ $santri->kecamatan }}</option>');
-            $('.kelurahan_id').append('<option value="{{ $santri->kelurahan }}" title="{{ $santri->kelurahan }}">{{ $santri->kelurahan }}</option>');
-            $('.status_santri').append('<option value="{{ $santri->status }}" title="{{ $santri->status }}">{{ $santri->status }}</option>');
-            $('.tempat_lahir').append('<option value="{{ $santri->tempat_lahir }}" title="{{ $santri->tempat_lahir }}">{{ $santri->tempat_lahir }}</option>');
-            $('.pendidikan_id').append('<option value="{{ $santri->pend_terakhir }}" title="{{ $santri->pend_terakhir }}">{{ $santri->pend_terakhir }}</option>');
-            $('.pendidikan_id_ayah').append('<option value="{{ $wali->	pend_terakhir_id_ayah }}" title="{{ $wali->	pend_terakhir_id_ayah }}">{{ $wali->	pend_terakhir_id_ayah }}</option>');
-            $('.pend_id_ibu').append('<option value="{{ $wali->pend_terakhir_id_ibu }}" title="{{ $wali->pend_terakhir_id_ibu }}">{{ $wali->pend_terakhir_id_ibu }}</option>');
-            $('.tempat_lahir_ayah').append('<option value="{{ $wali->tempat_lahir_ayah }}" title="{{ $wali->tempat_lahir_ayah }}">{{ $wali->tempat_lahir_ayah }}</option>');
-            $('.tempat_lahir_ibu').append('<option value="{{ $wali->tempat_lahir_ibu }}" title="{{ $wali->tempat_lahir_ibu }}">{{ $wali->tempat_lahir_ibu }}</option>');
+            $('.propinsi_id').append(
+                '<option value="{{ $santri->provinsi }}" title="{{ $santri->provinsi }}">{{ $santri->provinsi }}</option>'
+            );
+            $('.kabupaten_id').append(
+                '<option value="{{ $santri->kabupaten }}" title="{{ $santri->kabupaten }}">{{ $santri->kabupaten }}</option>'
+            );
+            $('.kecamatan_id').append(
+                '<option value="{{ $santri->kecamatan }}" title="{{ $santri->kecamatan }}">{{ $santri->kecamatan }}</option>'
+            );
+            $('.kelurahan_id').append(
+                '<option value="{{ $santri->kelurahan }}" title="{{ $santri->kelurahan }}">{{ $santri->kelurahan }}</option>'
+            );
+            $('.status_santri').append(
+                '<option value="{{ $santri->status }}" title="{{ $santri->status }}">{{ $santri->status }}</option>'
+            );
+            $('.tempat_lahir').append(
+                '<option value="{{ $santri->tempat_lahir }}" title="{{ $santri->tempat_lahir }}">{{ $santri->tempat_lahir }}</option>'
+            );
+            $('.pendidikan_id').append(
+                '<option value="{{ $santri->pend_terakhir }}" title="{{ $santri->pend_terakhir }}">{{ $santri->pend_terakhir }}</option>'
+            );
+            $('.pendidikan_id_ayah').append(
+                '<option value="{{ $wali->pend_terakhir_id_ayah }}" title="{{ $wali->pend_terakhir_id_ayah }}">{{ $wali->pend_terakhir_id_ayah }}</option>'
+            );
+            $('.pend_id_ibu').append(
+                '<option value="{{ $wali->pend_terakhir_id_ibu }}" title="{{ $wali->pend_terakhir_id_ibu }}">{{ $wali->pend_terakhir_id_ibu }}</option>'
+            );
+            $('.tempat_lahir_ayah').append(
+                '<option value="{{ $wali->tempat_lahir_ayah }}" title="{{ $wali->tempat_lahir_ayah }}">{{ $wali->tempat_lahir_ayah }}</option>'
+            );
+            $('.tempat_lahir_ibu').append(
+                '<option value="{{ $wali->tempat_lahir_ibu }}" title="{{ $wali->tempat_lahir_ibu }}">{{ $wali->tempat_lahir_ibu }}</option>'
+            );
 
             $('.status_santri').val("{{ $santri->status }}").trigger('change');
             $('.tempat_lahir').val("{{ $santri->tempat_lahir }}").trigger('change');
@@ -685,81 +659,38 @@
             $('#status_santri').val(data);
             console.log($('#status_santri').val(data));
         });
+        $('.khos').select2({
+            width: '100%',
+            ajax: {
+                url: '/khos',
+                dataType: 'json',
+                delay: 250,
+                data: function(params) {
+                    return {
+                        q: params.term, // search term
+                        id: $('.id').val(),
+                        page: 30
+                    };
+                },
+                processResults: function(data, params) {
+                    params.page = params.page || 1;
 
-    //     $('#btn-simpan').on('click', function () {
-    //     if (validate()) {
-    //         swal({
-    //             title: "Simpan data pasien?",
-    //             type: "info",
-    //             icon: "info",
-    //             showCancelButton: true,
-    //             showLoaderOnConfirm: true,
-    //             buttons: {
-    //                 cancel: {
-    //                     visible: true,
-    //                     text: 'Tidak',
-    //                     className: 'btn btn-warning'
-    //                 },
-    //                 confirm: {
-    //                     text: 'Simpan',
-    //                     className: 'btn btn-success'
-    //                 }
-    //             }
-    //         }).then((Confirm) => {
-    //             if (Confirm) {
-    //                 var dataForm = $("#form_edit").serialize();
-    //                 $.ajax({
-    //                     headers: {
-    //                         'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-    //                     },
-    //                     url: "{{ url('/admin/santri/update/'. $santri->santri_id) }}",
-    //                     type: "POST",
-    //                     data: dataForm,
-    //                     success: function(res) {
-    //                         location.replace("{{url('admin/santri')}}");
-    //                     },
-    //                     error: function(res) {
-    //                         var errors = JSON.parse(res.responseText);
-    //                         var messageError = '';
-    //                         $.each(errors.errors, function(idx, val) {
-    //                             messageError += val[0] + '. ';
-    //                         });
-    //                         swal({
-    //                             title: errors.message,
-    //                             text: messageError,
-    //                             type: "error",
-    //                             icon: "error",
-    //                         })
-    //                     }
-    //                 });
-    //             } else {
-    //                 $('#overlay').hide();
-    //                 swal.close();
-    //             }
-    //         });
-    //     } else {
-    //         swal({
-    //             title: "Pastikan semua data telah terisi dengan baik",
-    //             type: "error",
-    //             icon: "error",
-    //         })
-    //     }
-    // });
+                    return {
+                        results: data.items,
+                        pagination: {
+                            more: (params.page * 30) < data.total_count
+                        }
+                    };
+                },
+                cache: true
+            },
+            placeholder: '-- Khos --',
+            minimumInputLength: 0,
 
-    // function validate() {
-    //     var validated = true;
-    //     $('.required').each(function (i, el) {
-    //         var data = $(el).val();
-    //         var len = data.length;
-    //         if (len<1) {
-    //             validated = false;
-    //         }
-    //     });
-
-    //     return validated;
-    // }
-
-
-
+        }).on('change', function() {
+            var data = $(this).find('option:selected').text();
+            $('#khos').val(data);
+            console.log($('#khos').val(data));
+        });
     </script>
 @endpush
