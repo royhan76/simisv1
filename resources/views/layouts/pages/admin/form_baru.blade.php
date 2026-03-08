@@ -25,10 +25,10 @@
                             <div class="row">
                                 <div class="col-md-4 mt-3">
 
-                                    <div class="form-group ">
-                                        <label for="inputFloatingLabel2" class="placeholder">No. Induk</label>
-                                        <input id="inputFloatingLabel2" id="no_induk" name="no_induk" type="text"
-                                            class="form-control input-full" required="">
+                                    <div class="form-group">
+                                        <label class="placeholder">No. Induk</label>
+                                        <input id="no_induk" name="no_induk" type="text" class="form-control input-full"
+                                            required>
                                     </div>
                                     <div class="form-group ">
                                         <label for="inputFloatingLabel2" class="placeholder">Nama Lengkap</label>
@@ -38,12 +38,12 @@
                                     <div class="form-group ">
                                         <label for="inputFloatingLabel2" class="placeholder">KK</label>
                                         <input id="inputFloatingLabel2" id="kk" name="kk" type="text"
-                                            class="form-control input-full" >
+                                            class="form-control input-full">
                                     </div>
                                     <div class="form-group ">
                                         <label for="inputFloatingLabel2" class="placeholder">NIK</label>
                                         <input id="inputFloatingLabel2" id="nik" name="nik" type="text"
-                                            class="form-control input-full" >
+                                            class="form-control input-full">
                                     </div>
                                     <div class="form-group ">
                                         <label for="inputFloatingLabel2" class="placeholder">Tempat lahir</label>
@@ -60,7 +60,7 @@
                                     {{-- pendidikan_id --}}
                                     <div class="form-group ">
                                         <label for="inputFloatingLabel2" class="placeholder">Pendidikan Terakhir</label>
-                                        <select class="pendidikan_id form-control input-full"   name="pendidikan_id"></select>
+                                        <select class="pendidikan_id form-control input-full" name="pendidikan_id"></select>
                                         <input type="hidden" class="form-control input-full" id="pendidikan_id"
                                             name="pendidikan_id" value="">
                                     </div>
@@ -71,8 +71,8 @@
                                     <div class="form-group ">
                                         <label for="inputFloatingLabel2" class="placeholder">Khos</label>
                                         <select class="khos form-control input-full required" name="khos"></select>
-                                        <input type="hidden" class="form-control input-full" id="khos"
-                                            name="khos" value="">
+                                        <input type="hidden" class="form-control input-full" id="khos" name="khos"
+                                            value="">
                                     </div>
                                     <div class="form-group ">
                                         <label for="inputFloatingLabel2" class="placeholder">Status Santri</label>
@@ -118,7 +118,7 @@
                                     <div class="form-group ">
                                         <label for="inputFloatingLabel2" class="placeholder">Gang/Rt/Rw</label>
                                         <input id="inputFloatingLabel2" id="jalan" name="jalan" type="text"
-                                            class="form-control input-full" >
+                                            class="form-control input-full">
                                     </div>
                                     <div class="form-group ">
                                         <label for="inputFloatingLabel2" class="placeholder">Nama Wali</label>
@@ -128,7 +128,7 @@
                                     <div class="form-group ">
                                         <label for="inputFloatingLabel2" class="placeholder">No. Tlpn</label>
                                         <input id="inputFloatingLabel2" id="no_tlp" name="no_tlp" type="number"
-                                            class="form-control input-full" >
+                                            class="form-control input-full">
                                     </div>
                                     <div class="form-group ">
                                         <label for="inputFloatingLabel2" class="placeholder">Tahun Masuk</label>
@@ -142,11 +142,11 @@
                                     </div>
                                     <div class="form-group ">
                                         <label for="inputFloatingLabel2" class="placeholder">Dokumen kk</label><br>
-                                        <input type="file" name="dok_kk" id="dok_kk" >
+                                        <input type="file" name="dok_kk" id="dok_kk">
                                     </div>
                                     <div class="form-group ">
                                         <label for="inputFloatingLabel2" class="placeholder">Foto Profil</label><br>
-                                        <input type="file" name="image" id="image" >
+                                        <input type="file" name="image" id="image">
                                     </div>
 
                                 </div>
@@ -617,6 +617,48 @@
             $('#khos').val(data);
             console.log($('#khos').val(data));
         });
-    </script>
 
+
+    </script>
+    <script>
+       $(document).ready(function () {
+
+    $('#no_induk').on('change', function () {
+
+        let noInduk = $(this).val();
+
+        if(noInduk == '') return;
+
+        $.ajax({
+            url: '/cek-no-induk',
+            type: 'GET',
+            data: { no_induk: noInduk },
+
+            success: function(res){
+
+                console.log(res); // untuk debug
+
+                if(res.exists === true){
+
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Maaf!',
+                        text: 'No Induk sudah terdaftar'
+                    });
+
+                    $('#no_induk').val('').focus();
+                }
+
+            },
+
+            error:function(){
+                console.log('error cek no induk');
+            }
+
+        });
+
+    });
+
+});
+    </script>
 @endpush

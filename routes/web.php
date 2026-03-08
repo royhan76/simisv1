@@ -71,7 +71,7 @@ Route::group(['middleware' => 'auth'], function () {
         Route::get('keuangan', 'SantrisController@keuangan')->name('keuangan');
     });
 });
-
+Route::get('/cek-no-induk', 'SantrisController@cekNoInduk');
 // Route::get('/login','HomeController@login')->name('login')->middleware('guest');
 Route::get('/', function () {
     return view('auth.login');

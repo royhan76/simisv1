@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\Storage;
 use \Yajra\Datatables\Datatables;
 use App\Exports\SantriExport;
 use Maatwebsite\Excel\Facades\Excel;
+use RealRashid\SweetAlert\Facades\Alert;
 
 class AdminController extends Controller
 {
@@ -52,57 +53,49 @@ class AdminController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
-    {
+{
+    // cek apakah no_induk sudah ada
+    $cek = Santris::where('no_induk', $request->no_induk)->first();
 
-        // dd($request);
+    if ($cek) {
+        Alert::error('Maaf!', 'Data santri dengan No. Induk tersebut sudah tersedia');
+        return redirect()->back()->withInput();
+    }
 
-        $tgl_lahir_ayah = date('Y-m-d', strtotime($request->tgl_lahir_ayah));
-        $tgl_lahir_ibu = date('Y-m-d', strtotime($request->tgl_lahir_ibu));
-        $tgl_lahir = date('Y-m-d', strtotime($request->tgl_lahir));
-        $insertDataWali = WaliModel::create(
-            [
+    // format tanggal
+    $tgl_lahir = $request->tgl_lahir
+        ? date('Y-m-d', strtotime($request->tgl_lahir))
+        : null;
 
-                // 'santri_id','ayah_id','ayah_nik','ayah','pend_terakhir_id_ayah','ttl_ayah','pekerjaan_ayah','nik_ibu','ibu','ttl_ibu','pekerjaan_ibu','pend_terakhir_id_ibu'
-                'santri_id'  => $request->nik,
-                // 'ayah_nik' => $request->nik_ayah,
-                'ayah' => $request->ayah,
-                // 'pend_terakhir_id_ayah' => $request->pendidikan_id_ayah,
-                // 'tempat_lahir_ayah' => $request->tempat_lahir_ayah,
-                // 'tgl_lahir_ayah' => $tgl_lahir_ayah,
-                // 'pekerjaan_ayah' => $request->pekerjaan_ayah,
-                // 'nik_ibu' => $request->nik_ibu,
-                // 'ibu' => $request->ibu,
-                // 'tempat_lahir_ibu' => $request->tempat_lahir_ibu,
-                // 'tgl_lahir_ibu' => $tgl_lahir_ibu,
-                // 'pekerjaan_ibu' => $request->pekerjaan_ibu,
-                // 'pend_terakhir_id_ibu' => $request->pend_id_ibu,
-            ]
-        );
+    // simpan wali
+    WaliModel::create([
+        'santri_id' => $request->nik,
+        'ayah' => $request->ayah,
+    ]);
 
-        $insertSantri = Santris::create([
-            'santri_id' => $request->nik,
-            'no_induk' => $request->no_induk,
-            'kk' => $request->kk,
-            'nik' => $request->nik,
-            'tempat_lahir'  => $request->tempat_lahir,
-            'tgl_lahir'  => $tgl_lahir,
-            'nama' => $request->nama_lengkap,
-            'khos' => $request->khos,
-            'status' => $request->status_santri,
-            "jalan" => $request->jalan,
-            "kelurahan" => $request->kelurahan_id,
-            "kecamatan" => $request->kecamatan_id,
-            "kabupaten" => $request->kabupaten_id,
-            "provinsi" => $request->propinsi_id,
-            'pend_terakhir' => $request->pendidikan_id,
-            'no_tlp' => $request->no_tlp,
-        ]);
+    // simpan santri
+    Santris::create([
+        'santri_id' => $request->nik,
+        'no_induk' => $request->no_induk,
+        'kk' => $request->kk,
+        'nik' => $request->nik,
+        'tempat_lahir' => $request->tempat_lahir,
+        'tgl_lahir' => $tgl_lahir,
+        'nama' => $request->nama_lengkap,
+        'khos' => $request->khos,
+        'status' => $request->status_santri,
+        'jalan' => $request->jalan,
+        'kelurahan' => $request->kelurahan_id,
+        'kecamatan' => $request->kecamatan_id,
+        'kabupaten' => $request->kabupaten_id,
+        'provinsi' => $request->propinsi_id,
+        'pend_terakhir' => $request->pendidikan_id,
+        'no_tlp' => $request->no_tlp,
+    ]);
 
-        $validatedData = $request->validate([
-    'image' => 'required|image|mimes:jpg,png,jpeg,gif,svg|max:2048',
-        ]);
+    // upload foto
+    if ($request->hasFile('image')) {
 
-        // Simpan file ke storage/app/public/images
         $path = $request->file('image')->store('images', 'public');
 
         Photo::create([
@@ -110,24 +103,38 @@ class AdminController extends Controller
             'path' => $path,
             'santri_id' => $request->nik,
         ]);
+    }
+
+    // upload dokumen kk
+    if ($request->hasFile('dok_kk')) {
+
+        $pathKK = $request->file('dok_kk')->store('dokkk', 'public');
+
         DokKkModel::create([
-            'name' => $request->file('image')->getClientOriginalName(),
-            'path' => $path,
+            'name' => $request->file('dok_kk')->getClientOriginalName(),
+            'path' => $pathKK,
             'id_santri' => $request->nik,
         ]);
-        ThnMasukModel::create([
-            'id'=>$request->nik,
-            'id_santri'=>$request->nik,
-            'thn_masuk'=>$request->tahun_masuk,
-        ]);
-        ThnKeluarModel::create([
-            'id'=>$request->nik,
-            'id_santri'=>$request->nik,
-            'thn_keluar'=>$request->tahun_keluar,
-        ]);
-
-        return redirect()->route('admin');
     }
+
+    // tahun masuk
+    ThnMasukModel::create([
+        'id' => $request->nik,
+        'id_santri' => $request->nik,
+        'thn_masuk' => $request->tahun_masuk,
+    ]);
+
+    // tahun keluar
+    ThnKeluarModel::create([
+        'id' => $request->nik,
+        'id_santri' => $request->nik,
+        'thn_keluar' => $request->tahun_keluar,
+    ]);
+
+    Alert::success('Berhasil', 'Data santri berhasil disimpan');
+
+    return redirect()->route('admin');
+}
 
     public function getSantri(Request $request)
 {
@@ -273,6 +280,14 @@ class AdminController extends Controller
 public function update(Request $request, $id)
 {
 
+// dd($request->tahun_masuk, $request->tahun_keluar);
+// dd($request->all());
+    $santri = Santris::findOrFail($id);
+    $wali   = WaliModel::findOrFail($id);
+
+
+// ================= PHOTO =================
+
     $data = Photo::where('santri_id', $id)->first();
 
     if ($request->hasFile('photo')) {
@@ -292,7 +307,9 @@ public function update(Request $request, $id)
         $data->save();
     }
 
+
 // ================= DOK KK =================
+
     $dok_kk = DokKkModel::where('id_santri', $id)->first();
 
     if ($request->hasFile('dok_kk')) {
@@ -311,52 +328,66 @@ public function update(Request $request, $id)
         $dok_kk->path = $path;
         $dok_kk->save();
     }
-        $santri = Santris::find($id);
-        $wali = WaliModel::find($id);
 
 
-        $santri->no_induk  = $request->no_induk;
-        $santri->nama = $request->nama_lengkap;
-        $santri->status = $request->status_santri;
-        $santri->khos = $request->khos;
-        $santri->kk = $request->kk;
-        $santri->nik = $request->nik;
-        $santri->tempat_lahir = $request->tempat_lahir;
-        $santri->tgl_lahir = $request->tgl_lahir;
-        $santri->nisn = $request->nisn;
-        $santri->pend_terakhir = $request->pendidikan_id;
-        $santri->provinsi = $request->propinsi_id;
-        $santri->kabupaten = $request->kabupaten_id;
-        $santri->kecamatan = $request->kecamatan_id;
-        $santri->kelurahan = $request->kelurahan_id;
-        $santri->jalan = $request->jalan;
-        $santri->kodepos = $request->kode_pos;
-        $wali->ayah = $request->ayah;
-        $wali->ayah_nik = $request->nik_ayah;
-        $wali->pekerjaan_ayah = $request->pekerjaan_ayah;
-        $wali->tempat_lahir_ayah = $request->tempat_lahir_ayah;
-        $wali->tgl_lahir_ayah = $request->tgl_lahir_ayah;
-        $wali->pend_terakhir_id_ayah = $request->pendidikan_id_ayah;
-        $wali->ibu = $request->ibu;
-        $wali->nik_ibu = $request->nik_ibu;
-        $wali->pekerjaan_ibu = $request->pekerjaan_ibu;
-        $wali->tempat_lahir_ibu = $request->tempat_lahir_ibu;
-        $wali->tgl_lahir_ibu = $request->tgl_lahir_ibu;
+// ================= UPDATE SANTRI =================
 
-        $save = $santri->save();
-        $save = $wali->save();
+    $santri->no_induk  = $request->no_induk;
+    $santri->nama = $request->nama_lengkap;
+    $santri->status = $request->status_santri;
+    $santri->khos = $request->khos;
+    $santri->kk = $request->kk;
+    $santri->nik = $request->nik;
+    $santri->tempat_lahir = $request->tempat_lahir;
+    $santri->tgl_lahir = $request->tgl_lahir;
+    $santri->nisn = $request->nisn;
+    $santri->pend_terakhir = $request->pendidikan_id;
+    $santri->provinsi = $request->propinsi_id;
+    $santri->kabupaten = $request->kabupaten_id;
+    $santri->kecamatan = $request->kecamatan_id;
+    $santri->kelurahan = $request->kelurahan_id;
+    $santri->jalan = $request->jalan;
+    $santri->kodepos = $request->kode_pos;
+
+    $santri->save();
 
 
+// ================= UPDATE WALI =================
 
-        if ($save) {
-            return redirect()->route('admin')->with('success', 'Data Berhasil disimpan');
-        } else {
-            return redirect()->route('admin')->with('failed', 'Data Gagal disimpan');
-        }
+    $wali->ayah = $request->ayah;
+    $wali->ayah_nik = $request->nik_ayah;
+    $wali->pekerjaan_ayah = $request->pekerjaan_ayah;
+    $wali->tempat_lahir_ayah = $request->tempat_lahir_ayah;
+    $wali->tgl_lahir_ayah = $request->tgl_lahir_ayah;
 
-        // return redirect()->route('admin');
-        // return $foto;
-    }
+    $wali->ibu = $request->ibu;
+    $wali->nik_ibu = $request->nik_ibu;
+    $wali->pekerjaan_ibu = $request->pekerjaan_ibu;
+    $wali->tempat_lahir_ibu = $request->tempat_lahir_ibu;
+    $wali->tgl_lahir_ibu = $request->tgl_lahir_ibu;
+
+    $wali->save();
+
+
+// ================= TAHUN MASUK =================
+
+    ThnMasukModel::updateOrCreate(
+        ['id_santri' => $id],
+        ['thn_masuk' => $request->tahun_masuk]
+    );
+
+
+// ================= TAHUN KELUAR =================
+
+    ThnKeluarModel::updateOrCreate(
+        ['id_santri' => $id],
+        ['thn_keluar' => $request->tahun_keluar]
+    );
+
+
+    return redirect()->route('admin')->with('success', 'Data Berhasil disimpan');
+
+}
 
     /**
      * Remove the specified resource from storage.

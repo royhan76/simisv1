@@ -41,6 +41,15 @@ class SantrisController extends Controller
         return view('layouts.pages.santri.keuangan');
     }
 
+    public function cekNoInduk(Request $request)
+    {
+        $exists = Santris::where('no_induk', $request->no_induk)->exists();
+
+        return response()->json([
+            'exists' => $exists
+        ]);
+    }
+
 
 
 }
