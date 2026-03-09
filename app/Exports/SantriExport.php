@@ -49,7 +49,9 @@ $data = $query->select(
     'thn_masuk.thn_masuk',
     'santri.no_tlp',
     'thn_keluar.thn_keluar'
-)->get();
+)
+->distinct('santri.santri_id')
+->get();
 
         $rows = [];
 

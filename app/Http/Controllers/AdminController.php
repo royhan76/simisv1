@@ -348,6 +348,7 @@ public function update(Request $request, $id)
     $santri->kelurahan = $request->kelurahan_id;
     $santri->jalan = $request->jalan;
     $santri->kodepos = $request->kode_pos;
+    $santri->no_tlp = $request->no_tlp;
 
     $santri->save();
 

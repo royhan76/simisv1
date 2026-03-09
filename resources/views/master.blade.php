@@ -100,7 +100,7 @@
     </div>
     {{-- org chart --}}
     {{-- <script src="{{asset('assets/js/chartOrg.js') }}"></script> --}}
-    <script src="{{asset('assets/js/strukturorg.js') }}"></script>
+    <script src="{{ asset('assets/js/strukturorg.js') }}"></script>
     <!--   Core JS Files   -->
     <script src="{{ asset('assets/js/core/jquery.3.2.1.min.js') }}"></script>
     <script src="{{ asset('assets/js/core/popper.min.js') }}"></script>
@@ -254,6 +254,14 @@
     @stack('javascript')
     @include('sweetalert::alert')
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <script>
+        $.ajaxSetup({
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            }
+        });
+    </script>
 </body>
 
 </html>
