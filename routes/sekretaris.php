@@ -6,6 +6,4 @@ Route::prefix('sekretaris')->group(function () {
 
     Route::get('/', 'SekretarisController@index');
 
-    Route::get('/strukturorg', 'StrukturOrgController@StrukturOrg');
-
 });

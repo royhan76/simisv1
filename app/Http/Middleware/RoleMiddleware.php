@@ -10,12 +10,13 @@ class RoleMiddleware
     public function handle($request, Closure $next, ...$roles)
     {
 
+
         if (!Auth::check()) {
             return redirect('/login');
         }
 
         $user = Auth::user();
-
+// dd($user->role, $roles);
         if (in_array($user->role, $roles)) {
             return $next($request);
         }

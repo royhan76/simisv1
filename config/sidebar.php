@@ -45,6 +45,18 @@ return [
 
             ]
         ],
+        [
+            'title' => 'Master',
+            'icon' => 'fas fa-layer-group',
+            'roles' => ['sekretaris'],
+            'submenu' => [
+
+                [
+                    'title' => 'Data Santri',
+                    'url' => '/admin/alldatasantri'
+                ],
+            ]
+        ],
 
         [
             'title' => 'Pendaftaran Santri',
@@ -60,10 +72,11 @@ return [
                 [
                     'title' => 'Santri Lama',
                     'url' => '/admin/form_lama'
-                ]
+                ],
 
             ]
         ],
+
 
         [
             'title' => 'Ma\'arif',
