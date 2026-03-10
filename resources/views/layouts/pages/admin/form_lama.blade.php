@@ -27,17 +27,17 @@
                                 role="tablist">
                                 <li class="nav-item submenu">
                                     <a class="nav-link active show" id="tab-santri" data-toggle="pill" href="#data_santri"
-                                        role="tab" aria-controls="pills-datasantri-nobd" aria-selected="true"> DATA SANTRI</a>
+                                        role="tab" aria-controls="pills-datasantri-nobd" aria-selected="true"> DATA
+                                        SANTRI</a>
                                 </li>
                                 <li class="nav-item submenu">
-                                    <a class="nav-link" id="tab-ortu" data-toggle="pill"
-                                        href="#data_ortu" role="tab" aria-controls="pills-dataortu-nobd"
-                                        aria-selected="false">DATA ORANG TUA</a>
+                                    <a class="nav-link" id="tab-ortu" data-toggle="pill" href="#data_ortu" role="tab"
+                                        aria-controls="pills-dataortu-nobd" aria-selected="false">DATA ORANG TUA</a>
                                 </li>
                                 <li class="nav-item submenu">
-                                    <a class="nav-link " id="tab-alamat" data-toggle="pill"
-                                        href="#data_alamat" role="tab" aria-controls="pills-alamat-nobd"
-                                        aria-selected="false">DATA ALAMAT</a>
+                                    <a class="nav-link " id="tab-alamat" data-toggle="pill" href="#data_alamat"
+                                        role="tab" aria-controls="pills-alamat-nobd" aria-selected="false">DATA
+                                        ALAMAT</a>
                                 </li>
                             </ul>
 
@@ -174,10 +174,18 @@
                                                 <input id="inputFloatingLabel2" id="warganegara" name="warganegara"
                                                     type="text" class="form-control input-full">
                                             </div>
-                                            <div class="form-group ">
-                                                <label for="inputFloatingLabel2" class="placeholder">Jenis Kelamin</label>
-                                                <input id="inputFloatingLabel2" id="kelamin" name="kelamin"
-                                                    type="text" class="form-control input-full">
+                                            <div class="form-check">
+                                                <label>Jenis Kelamin</label><br>
+                                                <label class="form-radio-label">
+                                                    <input class="form-radio-input" id="laki_laki" type="radio" name="optionsRadios"
+                                                        value="" checked="">
+                                                    <span class="form-radio-sign">Laki-laki</span>
+                                                </label>
+                                                <label class="form-radio-label ml-3">
+                                                    <input class="form-radio-input" id="perempuan" type="radio" name="optionsRadios"
+                                                        value="">
+                                                    <span class="form-radio-sign">Perempuan</span>
+                                                </label>
                                             </div>
                                             <div class="form-group ">
                                                 <label for="inputFloatingLabel2" class="placeholder">Agama</label>
@@ -225,7 +233,7 @@
                                             <div class="form-group">
                                                 <label>Status</label>
                                                 <input type="text" name="status_ayah" value=""
-                                                    class="form-control">
+                                                    class="form-control" placeholder="Masih Hidup">
                                             </div>
 
                                             <div class="form-group">
@@ -268,8 +276,8 @@
                                             </div>
                                             <div class="form-group">
                                                 <label>Status</label>
-                                                <input type="text" name="status_ayah" value=""
-                                                    class="form-control">
+                                                <input type="text" name="status_ibu" value=""
+                                                    class="form-control" placeholder="Masih Hidup">
                                             </div>
 
                                             <div class="form-group">
@@ -321,6 +329,12 @@
                                                     <h2>Domisili Ayah</h2>
                                                 </label>
                                             </div>
+                                            <div class="form-check">
+                                                <label class="form-check-label">
+                                                    {{-- <input class="form-check-input" type="checkbox" value="">
+                                                    <span class="form-check-sign">Sama Dengan Ayah</span> --}}
+                                                </label>
+                                            </div>
 
                                             <div class="form-group">
                                                 <label>Provinsi</label>
@@ -356,10 +370,9 @@
                                                 </label>
                                             </div>
                                             <div class="form-check">
-                                                <input class="form-check-input" type="checkbox" value=""
-                                                    id="flexCheckDefault">
-                                                <label class="form-check-label" for="flexCheckDefault">
-                                                    Sama Dengan Alamat Ayah
+                                                <label class="form-check-label">
+                                                    <input class="form-check-input" type="checkbox" value="">
+                                                    <span class="form-check-sign">Sama Dengan Ayah</span>
                                                 </label>
                                             </div>
 
