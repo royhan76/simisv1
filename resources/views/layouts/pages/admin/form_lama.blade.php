@@ -7,7 +7,7 @@
         <div class="page-inner py-5">
             <div class="d-flex align-items-left align-items-md-center flex-column flex-md-row">
                 <div>
-                    <h2 class="text-white pb-2 fw-bold">Form Pendaftaran Santri Baru</h2>
+                    <h2 class="text-white pb-2 fw-bold">Form Update Data Santri</h2>
                     <h5 class="text-white op-7 mb-2">Pondok Pesantren Ma'hadul 'Ilmi Asy-Syar'ie</h5>
                 </div>
             </div>
@@ -22,263 +22,390 @@
 
                         <form action="{{ route('add_santri_baru') }}" method="POST" enctype="multipart/form-data">
                             @csrf
-                            <div class="row">
-                                <div class="col-md-4 mt-3">
 
-                                    <div class="form-group ">
-                                        <label for="inputFloatingLabel2" class="placeholder">No. Induk</label>
-                                        <input id="inputFloatingLabel2" id="no_induk" name="no_induk" type="text"
-                                            class="form-control input-full" required="">
-                                    </div>
-                                    <div class="form-group ">
-                                        <label for="inputFloatingLabel2" class="placeholder">Nama Lengkap</label>
-                                        <input id="inputFloatingLabel2" id="nama_lengkap" name="nama_lengkap" type="text"
-                                            class="form-control input-full" required="">
-                                    </div>
-                                    <div class="form-group ">
-                                        <label for="inputFloatingLabel2" class="placeholder">KK</label>
-                                        <input id="inputFloatingLabel2" id="kk" name="kk" type="text"
-                                            class="form-control input-full" required="">
-                                    </div>
-                                    <div class="form-group ">
-                                        <label for="inputFloatingLabel2" class="placeholder">NIK</label>
-                                        <input id="inputFloatingLabel2" id="nik" name="nik" type="text"
-                                            class="form-control input-full" required="">
-                                    </div>
-                                    <div class="form-group ">
-                                        <label for="inputFloatingLabel2" class="placeholder">Tempat lahir</label>
-                                        <select class="tempat_lahir form-control input-full required"
-                                            name="tempat_lahir"></select>
-                                        <input type="hidden" class="form-control input-full" id="tempat_lahir"
-                                            name="tempat_lahir" value="">
-                                    </div>
-                                    <div class="form-group ">
-                                        <label for="inputFloatingLabel2" class="placeholder">Tanggal Lahir</label>
-                                        <input id="inputFloatingLabel2" id="tgl_lahir" name="tgl_lahir" type="date"
-                                            class="form-control input-full" required="" placeholder="tanggal lahir">
-                                    </div>
-                                    {{-- pendidikan_id --}}
-                                    <div class="form-group ">
-                                        <label for="inputFloatingLabel2" class="placeholder">Pendidikan Terakhir</label>
-                                        <select class="pendidikan_id form-control input-full" name="pendidikan_id"></select>
-                                        <input type="hidden" class="form-control input-full" id="pendidikan_id"
-                                            name="pendidikan_id" value="">
-                                    </div>
-                                </div>
-                                {{-- tengah --}}
-                                <div class="col-md-4 mt-3">
+                            <ul class="nav nav-pills nav-secondary nav-pills-no-bd" id="pills-tab-without-border"
+                                role="tablist">
+                                <li class="nav-item submenu">
+                                    <a class="nav-link active show" id="tab-santri" data-toggle="pill" href="#data_santri"
+                                        role="tab" aria-controls="pills-datasantri-nobd" aria-selected="true"> DATA SANTRI</a>
+                                </li>
+                                <li class="nav-item submenu">
+                                    <a class="nav-link" id="tab-ortu" data-toggle="pill"
+                                        href="#data_ortu" role="tab" aria-controls="pills-dataortu-nobd"
+                                        aria-selected="false">DATA ORANG TUA</a>
+                                </li>
+                                <li class="nav-item submenu">
+                                    <a class="nav-link " id="tab-alamat" data-toggle="pill"
+                                        href="#data_alamat" role="tab" aria-controls="pills-alamat-nobd"
+                                        aria-selected="false">DATA ALAMAT</a>
+                                </li>
+                            </ul>
 
-                                    <div class="form-group ">
-                                        <label for="inputFloatingLabel2" class="placeholder">Khos</label>
-                                        <select class="khos form-control input-full required" name="khos"></select>
-                                        <input type="hidden" class="form-control input-full" id="khos" name="khos"
-                                            value="">
-                                    </div>
-                                    <div class="form-group ">
-                                        <label for="inputFloatingLabel2" class="placeholder">Status Santri</label>
-                                        <select class="status_santri form-control input-full required"
-                                            name="status_santri"></select>
-                                        <input type="hidden" class="form-control input-full" id="status_santri"
-                                            name="status_santri" value="">
-                                    </div>
+                            <div class="tab-content mt-3">
 
-                                    <div class="form-group ">
-                                        <label for="inputFloatingLabel2" class="placeholder">Provinsi</label>
-                                        <select class="propinsi_id form-control input-full required" name="propinsi_id"
-                                            style=" height: 62px;"></select>
-                                        <input type="hidden" class="form-control input-full" id="propinsi_id"
-                                            name="propinsi_id" value="">
+                                {{-- TAB 1 DATA SANTRI --}}
+                                <div class="tab-pane fade show active" id="data_santri" role="tabpanel">
 
-                                    </div>
-                                    <div class="form-group ">
-                                        <label for="inputFloatingLabel2" class="placeholder">Kabupaten</label>
-                                        <select class="kabupaten_id form-control input-full required"
-                                            name="kabupaten_id"></select>
-                                        <input type="hidden" class="form-control input-full" id="kabupaten_id"
-                                            name="kabupaten_id" value="">
-                                    </div>
-                                    <div class="form-group ">
-                                        <label for="inputFloatingLabel2" class="placeholder">Kecamatan</label>
-                                        <select class="kecamatan_id form-control input-full required"
-                                            name="kecamatan_id"></select>
-                                        <input type="hidden" class="form-control input-full" id="kecamatan_id"
-                                            name="kecamatan_id">
-                                    </div>
-                                    <div class="form-group ">
-                                        <label for="inputFloatingLabel2" class="placeholder">Kelurahan/Desa</label>
-                                        <select class="kelurahan_id form-control input-full required"
-                                            name="kelurahan_id"></select>
-                                        <input type="hidden" class="form-control input-full" id="kelurahan_id"
-                                            name="kelurahan_id">
-                                    </div>
-                                </div>
-                                {{-- kiri --}}
-                                <div class="col-md-4 mt-3">
+                                    <div class="row">
+                                        <div class="col-md-4 mt-3">
 
-                                    <div class="form-group ">
-                                        <label for="inputFloatingLabel2" class="placeholder">Gang/Rt/Rw</label>
-                                        <input id="inputFloatingLabel2" id="jalan" name="jalan" type="text"
-                                            class="form-control input-full">
-                                    </div>
-                                    <div class="form-group ">
-                                        <label for="inputFloatingLabel2" class="placeholder">Nama Wali</label>
-                                        <input id="inputFloatingLabel2" id="ayah" name="ayah" type="text"
-                                            class="form-control input-full" required="">
-                                    </div>
-                                    <div class="form-group ">
-                                        <label for="inputFloatingLabel2" class="placeholder">No. Tlpn</label>
-                                        <input id="inputFloatingLabel2" id="no_tlp" name="no_tlp" type="number"
-                                            class="form-control input-full">
-                                    </div>
-                                    <div class="form-group ">
-                                        <label for="inputFloatingLabel2" class="placeholder">Tahun Masuk</label>
-                                        <input id="inputFloatingLabel2" id="tahun_masuk" name="tahun_masuk"
-                                            type="date" class="form-control input-full" placeholder="Tahun Masuk">
-                                    </div>
-                                    <div class="form-group ">
-                                        <label for="inputFloatingLabel2" class="placeholder">Tahun Keluar</label>
-                                        <input id="inputFloatingLabel2" id="tahun_keluar" name="tahun_keluar"
-                                            type="date" class="form-control input-full" placeholder="Tahun keluar">
-                                    </div>
-                                    <div class="form-group ">
-                                        <label for="inputFloatingLabel2" class="placeholder">Dokumen kk</label><br>
-                                        <input type="file" name="dok_kk" id="dok_kk">
-                                    </div>
-                                    <div class="form-group ">
-                                        <label for="inputFloatingLabel2" class="placeholder">Foto Profil</label><br>
-                                        <input type="file" name="image" id="image">
-                                    </div>
-
-                                </div>
-                            </div>
-
-                            <!-- TABLE PEMBAYARAN SEMENTARA -->
-                            <div class="card mt-4" id="tablePembayaranCard" style="display:none;">
-                                <div class="card-body">
-                                    <h5 class="mb-3"><b>Ringkasan Pembayaran</b></h5>
-
-                                    <div class="table-responsive">
-                                        <table class="table table-bordered">
-                                            <thead class="thead-light">
-                                                <tr>
-                                                    <th width="5%">✔</th>
-                                                    <th>Jenis Pembayaran</th>
-                                                    <th class="text-right">Nominal</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody id="tablePembayaranBody">
-                                            </tbody>
-                                            <tfoot>
-                                                <tr>
-                                                    <th colspan="2" class="text-right">TOTAL</th>
-                                                    <th class="text-right" id="grandTotal">Rp 0</th>
-                                                </tr>
-                                            </tfoot>
-                                        </table>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="d-flex justify-content-between mt-4">
-
-                                <!-- Kiri -->
-                                <button type="submit" class="btn btn-success">
-                                    Simpan
-                                </button>
-
-                                <!-- Kanan -->
-                                <button type="button" class="btn btn-primary" data-toggle="modal"
-                                    data-target="#modalPembayaran">
-                                    Pembayaran
-                                </button>
-
-                            </div>
-                        </form>
-
-                        <!-- Modal Pembayaran -->
-                        <div class="modal fade" id="modalPembayaran" tabindex="-1" role="dialog">
-                            <div class="modal-dialog modal-lg" role="document">
-                                <div class="modal-content">
-
-                                    <div class="modal-header">
-                                        <h5 class="modal-title">Detail Pembayaran Santri</h5>
-                                        <button type="button" class="close" data-dismiss="modal">
-                                            <span>&times;</span>
-                                        </button>
-                                    </div>
-
-                                    <div class="modal-body">
-                                        <div class="row">
-
-                                            <div class="col-md-6 mb-3">
-                                                <label><b>Daftar Pondok</b></label>
-                                                <input type="number" id="daftar_pondok" name="daftar_pondok"
-                                                    class="form-control" value="100000">
+                                            <div class="form-group">
+                                                <label class="placeholder">No. Induk</label>
+                                                <input id="no_induk" name="no_induk" type="text"
+                                                    class="form-control input-full" required>
                                             </div>
-
-                                            <div class="col-md-6 mb-3">
-                                                <label><b>Sarana & Prasarana</b></label>
-                                                <input type="number" id="sarana_prasarana" name="sarana_prasarana"
-                                                    class="form-control" value="150000">
+                                            <div class="form-group ">
+                                                <label for="inputFloatingLabel2" class="placeholder">Nama Lengkap</label>
+                                                <input id="inputFloatingLabel2" id="nama_lengkap" name="nama_lengkap"
+                                                    type="text" class="form-control input-full" required="">
                                             </div>
-
-                                            <div class="col-md-6 mb-3">
-                                                <label><b>Pengairan</b></label>
-                                                <input type="number" id="pengairan" name="pengairan"
-                                                    class="form-control" value="85000">
+                                            <div class="form-group ">
+                                                <label for="inputFloatingLabel2" class="placeholder">KK</label>
+                                                <input id="inputFloatingLabel2" id="kk" name="kk" type="text"
+                                                    class="form-control input-full">
                                             </div>
-
-                                            <div class="col-md-6 mb-3">
-                                                <label><b>Kalender</b></label>
-                                                <input type="number" id="kalender" name="kalender"
-                                                    class="form-control" value="30000">
+                                            <div class="form-group ">
+                                                <label for="inputFloatingLabel2" class="placeholder">NIK</label>
+                                                <input id="inputFloatingLabel2" id="nik" name="nik" type="text"
+                                                    class="form-control input-full">
                                             </div>
-
-                                            <div class="col-md-6 mb-3">
-                                                <label><b>ROJABIYAH</b></label>
-                                                <input type="number" id="rojabiyah" name="rojabiyah"
-                                                    class="form-control" value="80000">
+                                            <div class="form-group ">
+                                                <label for="inputFloatingLabel2" class="placeholder">Tempat lahir</label>
+                                                <select class="tempat_lahir form-control input-full required"
+                                                    name="tempat_lahir"></select>
+                                                <input type="hidden" class="form-control input-full" id="tempat_lahir"
+                                                    name="tempat_lahir" value="" required="">
                                             </div>
-
-                                            <div class="col-md-6 mb-3">
-                                                <label><b>Syahriyah 3 Bulan</b></label>
-                                                <input type="number" id="syahriyah" name="syahriyah_3bulan"
-                                                    class="form-control" value="60000">
+                                            <div class="form-group ">
+                                                <label for="inputFloatingLabel2" class="placeholder">Tanggal Lahir</label>
+                                                <input id="inputFloatingLabel2" id="tgl_lahir" name="tgl_lahir"
+                                                    type="date" class="form-control input-full" required=""
+                                                    placeholder="tanggal lahir">
                                             </div>
-
-                                            <div class="col-md-6 mb-3">
-                                                <label><b>KTS</b></label>
-                                                <input type="number" id="kts" name="kts" class="form-control"
-                                                    value="10000">
+                                            {{-- pendidikan_id --}}
+                                            <div class="form-group ">
+                                                <label for="inputFloatingLabel2" class="placeholder">Pendidikan
+                                                    Terakhir</label>
+                                                <select class="pendidikan_id form-control input-full"
+                                                    name="pendidikan_id"></select>
+                                                <input type="hidden" class="form-control input-full" id="pendidikan_id"
+                                                    name="pendidikan_id" value="">
                                             </div>
-
-                                            <div class="col-md-6 mb-3">
-                                                <label><b>Seragam</b></label>
-                                                <input type="number" id="seragam" name="seragam" class="form-control"
-                                                    value="100000">
+                                            <div class="form-group ">
+                                                <label for="inputFloatingLabel2" class="placeholder">Khos</label>
+                                                <select class="khos form-control input-full required"
+                                                    name="khos"></select>
+                                                <input type="hidden" class="form-control input-full" id="khos"
+                                                    name="khos" value="">
                                             </div>
+                                            <div class="form-group ">
+                                                <label for="inputFloatingLabel2" class="placeholder">Status Santri</label>
+                                                <select class="status_santri form-control input-full required"
+                                                    name="status_santri"></select>
+                                                <input type="hidden" class="form-control input-full" id="status_santri"
+                                                    name="status_santri" value="">
+                                            </div>
+                                        </div>
+                                        {{-- tengah --}}
+                                        <div class="col-md-4 mt-3">
+                                            <div class="form-group ">
+                                                <label for="inputFloatingLabel2" class="placeholder">Provinsi</label>
+                                                <select class="propinsi_id form-control input-full required"
+                                                    name="propinsi_id" style=" height: 62px;"></select>
+                                                <input type="hidden" class="form-control input-full" id="propinsi_id"
+                                                    name="propinsi_id" value="">
 
-                                            <div class="col-md-6 mb-3">
-                                                <label><b>Haul</b></label>
-                                                <input type="number" id="haul" name="haul" class="form-control"
-                                                    value="50000">
+                                            </div>
+                                            <div class="form-group ">
+                                                <label for="inputFloatingLabel2" class="placeholder">Kabupaten</label>
+                                                <select class="kabupaten_id form-control input-full required"
+                                                    name="kabupaten_id"></select>
+                                                <input type="hidden" class="form-control input-full" id="kabupaten_id"
+                                                    name="kabupaten_id" value="">
+                                            </div>
+                                            <div class="form-group ">
+                                                <label for="inputFloatingLabel2" class="placeholder">Kecamatan</label>
+                                                <select class="kecamatan_id form-control input-full required"
+                                                    name="kecamatan_id"></select>
+                                                <input type="hidden" class="form-control input-full" id="kecamatan_id"
+                                                    name="kecamatan_id">
+                                            </div>
+                                            <div class="form-group ">
+                                                <label for="inputFloatingLabel2"
+                                                    class="placeholder">Kelurahan/Desa</label>
+                                                <select class="kelurahan_id form-control input-full required"
+                                                    name="kelurahan_id"></select>
+                                                <input type="hidden" class="form-control input-full" id="kelurahan_id"
+                                                    name="kelurahan_id">
+                                            </div>
+                                            <div class="form-group ">
+                                                <label for="inputFloatingLabel2" class="placeholder">Gang/Rt/Rw</label>
+                                                <input id="inputFloatingLabel2" id="jalan" name="jalan"
+                                                    type="text" class="form-control input-full">
+                                            </div>
+                                            <div class="form-group ">
+                                                <label for="inputFloatingLabel2" class="placeholder">Nama Wali</label>
+                                                <input id="inputFloatingLabel2" id="ayah" name="ayah"
+                                                    type="text" class="form-control input-full" required="">
+                                            </div>
+                                            <div class="form-group ">
+                                                <label for="inputFloatingLabel2" class="placeholder">No. Tlpn</label>
+                                                <input id="inputFloatingLabel2" id="no_tlp" name="no_tlp"
+                                                    type="number" class="form-control input-full">
+                                            </div>
+                                            <div class="form-group ">
+                                                <label for="inputFloatingLabel2" class="placeholder">Tahun Masuk</label>
+                                                <input id="inputFloatingLabel2" id="tahun_masuk" name="tahun_masuk"
+                                                    type="date" class="form-control input-full"
+                                                    placeholder="Tahun Masuk">
+                                            </div>
+                                            <div class="form-group ">
+                                                <label for="inputFloatingLabel2" class="placeholder">Tahun Keluar</label>
+                                                <input id="inputFloatingLabel2" id="tahun_keluar" name="tahun_keluar"
+                                                    type="date" class="form-control input-full"
+                                                    placeholder="Tahun keluar">
+                                            </div>
+                                        </div>
+                                        {{-- kiri --}}
+                                        <div class="col-md-4 mt-3">
+                                            <div class="form-group ">
+                                                <label for="inputFloatingLabel2"
+                                                    class="placeholder">Kewarganegaraan</label>
+                                                <input id="inputFloatingLabel2" id="warganegara" name="warganegara"
+                                                    type="text" class="form-control input-full">
+                                            </div>
+                                            <div class="form-group ">
+                                                <label for="inputFloatingLabel2" class="placeholder">Jenis Kelamin</label>
+                                                <input id="inputFloatingLabel2" id="kelamin" name="kelamin"
+                                                    type="text" class="form-control input-full">
+                                            </div>
+                                            <div class="form-group ">
+                                                <label for="inputFloatingLabel2" class="placeholder">Agama</label>
+                                                <input id="inputFloatingLabel2" id="agama" name="agama"
+                                                    type="text" class="form-control input-full">
+                                            </div>
+                                            <div class="form-group ">
+                                                <label for="inputFloatingLabel2" class="placeholder">Jumlah
+                                                    Saudara</label>
+                                                <input id="inputFloatingLabel2" id="j_saudara" name="j_saudara"
+                                                    type="text" class="form-control input-full">
+                                            </div>
+                                            <div class="form-group ">
+                                                <label for="inputFloatingLabel2" class="placeholder">Anak Ke</label>
+                                                <input id="inputFloatingLabel2" id="anak_ke" name="anak_ke"
+                                                    type="text" class="form-control input-full">
+                                            </div>
+                                            <div class="form-group ">
+                                                <label for="inputFloatingLabel2" class="placeholder">Dokumen
+                                                    kk</label><br>
+                                                <input type="file" name="dok_kk" id="dok_kk">
+                                            </div>
+                                            <div class="form-group ">
+                                                <label for="inputFloatingLabel2" class="placeholder">Foto
+                                                    Profil</label><br>
+                                                <input type="file" name="image" id="image">
                                             </div>
 
                                         </div>
                                     </div>
 
-                                    <div class="modal-footer">
-                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">
-                                            Batal
-                                        </button>
-                                        <button type="button" class="btn btn-success" id="savePembayaran">
-                                            Simpan
-                                        </button>
+                                </div>
+
+
+                                {{-- TAB 2 DATA ORANG TUA --}}
+                                <div class="tab-pane fade" id="data_ortu" role="tabpanel">
+
+                                    <div class="row">
+                                        <div class="col-md-6 mt-3">
+                                            <div class="form-group">
+                                                <label>Nama Ayah</label>
+                                                <input type="text" name="ayah" value=""
+                                                    class="form-control">
+                                            </div>
+                                            <div class="form-group">
+                                                <label>Status</label>
+                                                <input type="text" name="status_ayah" value=""
+                                                    class="form-control">
+                                            </div>
+
+                                            <div class="form-group">
+                                                <label>Kewarganegaraan</label>
+                                                <input type="text" name="Kewarganegaraan" value=""
+                                                    class="form-control">
+                                            </div>
+                                            <div class="form-group">
+                                                <label>NIK</label>
+                                                <input type="text" name="nik_ayah" value=""
+                                                    class="form-control">
+                                            </div>
+                                            <div class="form-group">
+                                                <label>Tempat Lahir</label>
+                                                <input type="text" name="tempat_lahir_ayah" value=""
+                                                    class="form-control">
+                                            </div>
+                                            <div class="form-group">
+                                                <label>Tanggal Lahir</label>
+                                                <input type="date" name="tanggal_lahir_ayah" value=""
+                                                    class="form-control">
+                                            </div>
+                                            <div class="form-group">
+                                                <label>Pendidikan Terakhir</label>
+                                                <input type="text" name="pend_ayah" value=""
+                                                    class="form-control">
+                                            </div>
+                                            <div class="form-group">
+                                                <label>Pekerjaan Utama</label>
+                                                <input type="text" name="pekerjaan_ayah" value=""
+                                                    class="form-control">
+                                            </div>
+
+                                        </div>
+                                        <div class="col-md-6 mt-3">
+                                            <div class="form-group">
+                                                <label>Nama Ibu</label>
+                                                <input type="text" name="ibu" value=""
+                                                    class="form-control">
+                                            </div>
+                                            <div class="form-group">
+                                                <label>Status</label>
+                                                <input type="text" name="status_ayah" value=""
+                                                    class="form-control">
+                                            </div>
+
+                                            <div class="form-group">
+                                                <label>Kewarganegaraan</label>
+                                                <input type="text" name="Kewarganegaraan_ibu" value=""
+                                                    class="form-control">
+                                            </div>
+                                            <div class="form-group">
+                                                <label>NIK</label>
+                                                <input type="text" name="nik_ibu" value=""
+                                                    class="form-control">
+                                            </div>
+                                            <div class="form-group">
+                                                <label>Tempat Lahir</label>
+                                                <input type="text" name="tempat_lahir_ibu" value=""
+                                                    class="form-control">
+                                            </div>
+                                            <div class="form-group">
+                                                <label>Tanggal Lahir</label>
+                                                <input type="date" name="tanggal_lahir_ibu" value=""
+                                                    class="form-control">
+                                            </div>
+                                            <div class="form-group">
+                                                <label>Pendidikan Terakhir</label>
+                                                <input type="text" name="pend_ibu" value=""
+                                                    class="form-control">
+                                            </div>
+                                            <div class="form-group">
+                                                <label>Pekerjaan Utama</label>
+                                                <input type="text" name="pekerjaan_ibu" value=""
+                                                    class="form-control">
+                                            </div>
+
+                                        </div>
+
                                     </div>
 
                                 </div>
+
+
+                                {{-- TAB 3 DATA ALAMAT --}}
+                                <div class="tab-pane fade" id="data_alamat" role="tabpanel">
+
+                                    <div class="row">
+
+                                        <div class="col-md-6 mt-3">
+                                            <div class="form-group">
+                                                <label>
+                                                    <h2>Domisili Ayah</h2>
+                                                </label>
+                                            </div>
+
+                                            <div class="form-group">
+                                                <label>Provinsi</label>
+                                                <select name="propinsi_id" class="form-control propinsi_id"></select>
+                                            </div>
+
+                                            <div class="form-group">
+                                                <label>Kabupaten</label>
+                                                <select name="kabupaten_id" class="form-control kabupaten_id"></select>
+                                            </div>
+
+                                            <div class="form-group">
+                                                <label>Kecamatan</label>
+                                                <select name="kecamatan_id" class="form-control kecamatan_id"></select>
+                                            </div>
+
+                                            <div class="form-group">
+                                                <label>Kelurahan</label>
+                                                <select name="kelurahan_id" class="form-control kelurahan_id"></select>
+                                            </div>
+
+                                            <div class="form-group">
+                                                <label>Gang / RT / RW</label>
+                                                <input type="text" name="jalan" value=""
+                                                    class="form-control">
+                                            </div>
+
+                                        </div>
+                                        <div class="col-md-6 mt-3">
+                                            <div class="form-group">
+                                                <label>
+                                                    <h2>Domisili Ibu</h2>
+                                                </label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" value=""
+                                                    id="flexCheckDefault">
+                                                <label class="form-check-label" for="flexCheckDefault">
+                                                    Sama Dengan Alamat Ayah
+                                                </label>
+                                            </div>
+
+                                            <div class="form-group">
+                                                <label>Provinsi</label>
+                                                <select name="propinsi_id" class="form-control propinsi_id"></select>
+                                            </div>
+
+                                            <div class="form-group">
+                                                <label>Kabupaten</label>
+                                                <select name="kabupaten_id" class="form-control kabupaten_id"></select>
+                                            </div>
+
+                                            <div class="form-group">
+                                                <label>Kecamatan</label>
+                                                <select name="kecamatan_id" class="form-control kecamatan_id"></select>
+                                            </div>
+
+                                            <div class="form-group">
+                                                <label>Kelurahan</label>
+                                                <select name="kelurahan_id" class="form-control kelurahan_id"></select>
+                                            </div>
+
+                                            <div class="form-group">
+                                                <label>Gang / RT / RW</label>
+                                                <input type="text" name="jalan" value=""
+                                                    class="form-control">
+                                            </div>
+
+                                        </div>
+
+                                    </div>
+
+                                </div>
+
                             </div>
-                        </div>
+
+                            <div class="d-flex justify-content-between mt-4">
+                                <!-- Kiri -->
+                                <button type="submit" class="btn btn-success">
+                                    Simpan
+                                </button>
+
+                            </div>
+                        </form>
+
                     </div>
 
                 </div>
@@ -747,45 +874,71 @@
 
     <script>
         function formatRupiah(angka) {
-    return 'Rp ' + angka.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
-}
+            return 'Rp ' + angka.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+        }
 
-$('#savePembayaran').click(function () {
+        $('#savePembayaran').click(function() {
 
-    let dataPembayaran = [
-        { nama: "Daftar Pondok", nilai: $('#daftar_pondok').val() },
-        { nama: "Sarana & Prasarana", nilai: $('#sarana_prasarana').val() },
-        { nama: "Pengairan", nilai: $('#pengairan').val() },
-        { nama: "Kalender", nilai: $('#kalender').val() },
-        { nama: "Rojabiyah/Akhirus Sanah", nilai: $('#rojabiyah').val() },
-        { nama: "Syahriyah 3 Bulan", nilai: $('#syahriyah').val() },
-        { nama: "KTS", nilai: $('#kts').val() },
-        { nama: "Seragam", nilai: $('#seragam').val() },
-        { nama: "Haul", nilai: $('#haul').val() }
-    ];
+            let dataPembayaran = [{
+                    nama: "Daftar Pondok",
+                    nilai: $('#daftar_pondok').val()
+                },
+                {
+                    nama: "Sarana & Prasarana",
+                    nilai: $('#sarana_prasarana').val()
+                },
+                {
+                    nama: "Pengairan",
+                    nilai: $('#pengairan').val()
+                },
+                {
+                    nama: "Kalender",
+                    nilai: $('#kalender').val()
+                },
+                {
+                    nama: "Rojabiyah/Akhirus Sanah",
+                    nilai: $('#rojabiyah').val()
+                },
+                {
+                    nama: "Syahriyah 3 Bulan",
+                    nilai: $('#syahriyah').val()
+                },
+                {
+                    nama: "KTS",
+                    nilai: $('#kts').val()
+                },
+                {
+                    nama: "Seragam",
+                    nilai: $('#seragam').val()
+                },
+                {
+                    nama: "Haul",
+                    nilai: $('#haul').val()
+                }
+            ];
 
-    let total = 0;
-    let html = "";
+            let total = 0;
+            let html = "";
 
-    dataPembayaran.forEach(function(item) {
+            dataPembayaran.forEach(function(item) {
 
-        let nominal = parseInt(item.nilai) || 0;
-        total += nominal;
+                let nominal = parseInt(item.nilai) || 0;
+                total += nominal;
 
-        html += `
+                html += `
             <tr>
                 <td><input type="checkbox" checked></td>
                 <td>${item.nama}</td>
                 <td class="text-right">${formatRupiah(nominal)}</td>
             </tr>
         `;
-    });
+            });
 
-    $('#tablePembayaranBody').html(html);
-    $('#grandTotal').html(formatRupiah(total));
-    $('#tablePembayaranCard').show();
+            $('#tablePembayaranBody').html(html);
+            $('#grandTotal').html(formatRupiah(total));
+            $('#tablePembayaranCard').show();
 
-    $('#modalPembayaran').modal('hide');
-});
+            $('#modalPembayaran').modal('hide');
+        });
     </script>
 @endpush
