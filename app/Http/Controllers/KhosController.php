@@ -13,7 +13,7 @@ class KhosController extends Controller
      function khos(Request $request)
      {
         $khosController = KhosModel::select('id', 'nama_khos', 'nama_khos as text')
-        ->where(DB::raw('UPPER(id)'), 'like', '%' . strtoupper($request->q) . '%')
+        ->where(DB::raw('UPPER(nama_khos)'), 'like', '%' . strtoupper($request->q) . '%')
 
                 ->get();
 

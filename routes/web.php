@@ -18,5 +18,7 @@ Route::get('pendidikan', 'PendidikanController@selectPendidikan');
 Route::get('status_santri', 'StatussantriController@StatussantriController');
 Route::get('warganegara', 'WarganegaraController@WarganegaraController');
 Route::get('agama', 'AgamaController@AgamaController');
+Route::get('khos', 'KhosController@khos');
+
 
 
