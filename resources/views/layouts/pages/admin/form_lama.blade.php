@@ -20,7 +20,9 @@
                 <div class="card full-height">
                     <div class="card-body">
 
-                        <form action="{{ route('add_santri_baru') }}" method="POST" enctype="multipart/form-data">
+                        <form action="{{ url('/admin/update/' . $santri->santri_id) }}" method="POST"
+                            enctype="multipart/form-data">
+
                             @csrf
 
                             <ul class="nav nav-pills nav-secondary nav-pills-no-bd" id="pills-tab-without-border"
@@ -177,13 +179,13 @@
                                             <div class="form-check">
                                                 <label>Jenis Kelamin</label><br>
                                                 <label class="form-radio-label">
-                                                    <input class="form-radio-input" id="laki_laki" type="radio" name="optionsRadios"
-                                                        value="" checked="">
+                                                    <input class="form-radio-input" id="laki_laki" type="radio"
+                                                        name="optionsRadios" value="" checked="">
                                                     <span class="form-radio-sign">Laki-laki</span>
                                                 </label>
                                                 <label class="form-radio-label ml-3">
-                                                    <input class="form-radio-input" id="perempuan" type="radio" name="optionsRadios"
-                                                        value="">
+                                                    <input class="form-radio-input" id="perempuan" type="radio"
+                                                        name="optionsRadios" value="">
                                                     <span class="form-radio-sign">Perempuan</span>
                                                 </label>
                                             </div>
@@ -196,12 +198,12 @@
                                                 <label for="inputFloatingLabel2" class="placeholder">Jumlah
                                                     Saudara</label>
                                                 <input id="inputFloatingLabel2" id="j_saudara" name="j_saudara"
-                                                    type="text" class="form-control input-full">
+                                                    type="number" class="form-control input-full">
                                             </div>
                                             <div class="form-group ">
                                                 <label for="inputFloatingLabel2" class="placeholder">Anak Ke</label>
                                                 <input id="inputFloatingLabel2" id="anak_ke" name="anak_ke"
-                                                    type="text" class="form-control input-full">
+                                                    type="number" class="form-control input-full">
                                             </div>
                                             <div class="form-group ">
                                                 <label for="inputFloatingLabel2" class="placeholder">Dokumen

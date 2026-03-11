@@ -20,7 +20,7 @@ class Santris extends Authenticatable
     public $incrementing = false; // kalau bukan auto increment
     protected $keyType = 'string'; // kalau id berupa string
     protected $table = 'santri';
-    protected $fillable = ['santri_id', 'no_induk','kk','nik','nisn','tempat_lahir','tgl_lahir','nama','khos','status','jalan','kelurahan','kecamatan','kabupaten','provinsi','kodepos','pend_terakhir','wali_id', 'no_tlp'];
+    protected $fillable = ['santri_id', 'no_induk','kk','nik','nisn','tempat_lahir','tgl_lahir','nama','khos','status','jalan','kelurahan','kecamatan','kabupaten','provinsi','kodepos','pend_terakhir','wali_id', 'no_tlp','kelamin','agama','warga_negara','anak_ke','j_saudara'];
 
 
     public function wali()

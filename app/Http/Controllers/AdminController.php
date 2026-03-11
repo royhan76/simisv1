@@ -6,6 +6,8 @@ use App\Photo;
 use App\DokKkModel;
 use App\Santris;
 use App\WaliModel;
+use App\AgamaModel;
+use App\WarganegaraModel;
 use App\ThnKeluarModel;
 use App\ThnMasukModel;
 use Illuminate\Http\Request;
@@ -73,6 +75,16 @@ class AdminController extends Controller
         'ayah' => $request->ayah,
     ]);
 
+    $agamaValue = $request->agama;
+    if ($agamaValue !== null && ctype_digit((string) $agamaValue)) {
+        $agamaValue = optional(AgamaModel::find($agamaValue))->agama;
+    }
+
+    $warganegaraValue = $request->warganegara;
+    if ($warganegaraValue !== null && ctype_digit((string) $warganegaraValue)) {
+        $warganegaraValue = optional(WarganegaraModel::find($warganegaraValue))->warganegara;
+    }
+
     // simpan santri
     Santris::create([
         'santri_id' => $request->nik,
@@ -91,6 +103,11 @@ class AdminController extends Controller
         'provinsi' => $request->propinsi_id,
         'pend_terakhir' => $request->pendidikan_id,
         'no_tlp' => $request->no_tlp,
+        'kelamin' => $request->jenis_kelamin,
+        'agama' => $agamaValue,
+        'warga_negara' => $warganegaraValue,
+        'anak_ke' => $request->anak_ke,
+        'j_saudara' => $request->j_saudara,
     ]);
 
     // upload foto
@@ -265,6 +282,17 @@ class AdminController extends Controller
 
         $foto = Photo::where('santri_id', $id)->first();
         $dok_kk =DokKkModel::where('id_santri', $id)->first();
+
+        if ($santri) {
+            if (!empty($santri->agama) && ctype_digit((string) $santri->agama)) {
+                $santri->agama = optional(AgamaModel::find($santri->agama))->agama ?? $santri->agama;
+            }
+
+            if (!empty($santri->warga_negara) && ctype_digit((string) $santri->warga_negara)) {
+                $santri->warga_negara = optional(WarganegaraModel::find($santri->warga_negara))->warganegara ?? $santri->warga_negara;
+            }
+        }
+
         return view('layouts.pages.admin.edit')->with(compact('santri', 'wali', 'foto','thn_masuk', 'thn_keluar','dok_kk'));
     }
 
@@ -280,8 +308,6 @@ class AdminController extends Controller
 public function update(Request $request, $id)
 {
 
-// dd($request->tahun_masuk, $request->tahun_keluar);
-// dd($request->all());
     $santri = Santris::findOrFail($id);
     $wali   = WaliModel::findOrFail($id);
 
@@ -349,6 +375,17 @@ public function update(Request $request, $id)
     $santri->jalan = $request->jalan;
     $santri->kodepos = $request->kode_pos;
     $santri->no_tlp = $request->no_tlp;
+    $santri->kelamin = $request->jenis_kelamin ?? $santri->kelamin;
+    $santri->anak_ke = $request->anak_ke ?? $santri->anak_ke;
+    $santri->j_saudara = $request->j_saudara ?? $santri->j_saudara;
+
+    $agamaValue = $request->agama;
+    if ($agamaValue !== null && ctype_digit((string) $agamaValue)) {
+        $agamaValue = optional(AgamaModel::find($agamaValue))->agama ?? $agamaValue;
+    }
+
+    $santri->agama = $agamaValue;
+    $santri->warga_negara = $request->warganegara;
 
     $santri->save();
 
