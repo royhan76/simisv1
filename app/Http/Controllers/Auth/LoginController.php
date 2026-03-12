@@ -44,25 +44,52 @@ class LoginController extends Controller
        return view('layouts.login.index');
     }
     public function login(Request $request)
+{
+    $input = $request->all();
+
+    $this->validate($request, [
+        'username' => 'required',
+        'password' => 'required',
+    ]);
+
+    if(auth()->attempt([
+        'username' => $input['username'],
+        'password' => $input['password']
+    ]))
     {
-        $input = $request->all();
 
-        $this->validate($request, [
-            'username' => 'required',
-            'password' => 'required',
-        ]);
+        $user = auth()->user();
 
-        if(auth()->attempt(array('username' => $input['username'], 'password' => $input['password'])))
-        {
-            if (auth()->user()->is_admin == 1) {
-                return redirect()->route('admin');
-            }else{
-                return redirect()->route('santri');
-            }
-        }else{
-            return redirect()->route('loginn')
-                ->with('error','username And Password Are Wrong.');
+        if ($user->role == 'admin') {
+            return redirect('/admin');
         }
 
+        if ($user->role == 'sekretaris') {
+            return redirect('/sekretaris');
+        }
+
+        if ($user->role == 'bendahara') {
+            return redirect('/bendahara');
+        }
+
+        if ($user->role == 'maarif') {
+            return redirect('/maarif');
+        }
+
+        if ($user->role == 'keamanan') {
+            return redirect('/keamanan');
+        }
+
+        if ($user->role == 'wali') {
+            return redirect('/wali');
+        }
+
+        return redirect('/santri');
+
+    }else{
+        return redirect()->route('loginn')
+            ->with('error','username And Password Are Wrong.');
     }
 }
+}
+
