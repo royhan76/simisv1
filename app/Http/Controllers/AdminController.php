@@ -245,14 +245,13 @@ class AdminController extends Controller
             <i class="icon-note"></i></a>';
 
             $button .= '<a href="javascript:void(0)"
-                data-id="'.$data->santri_id.'"
-                class="btn-hapus btn btn-danger btn-xs">
-                <i class="icon-trash"></i>
-            </a>';
+                        data-id="'.$data->santri_id.'"
+                        class="btn-hapus btn btn-danger btn-xs">
+                        <i class="icon-trash"></i>
+                    </a>';
 
-            $button .= "</div>";
-
-            return $button;
+                        $button .= "</div>";
+                        return $button;
 
         })
 
@@ -428,15 +427,7 @@ public function update(Request $request, $id)
     $santri->agama = $agamaValue;
     $santri->warga_negara = $request->warganegara;
 
-    $provinsi  = ProvinsiModel::find($request->propinsi_id);
-    $kabupaten = KabupatenModel::find($request->kabupaten_id);
-    $kecamatan = KecamatanModel::find($request->kecamatan_id);
-    $kelurahan = Alamat::find($request->kelurahan_id);
 
-    $santri->provinsi  = $provinsi->nama ?? null;
-    $santri->kabupaten = $kabupaten->nama ?? null;
-    $santri->kecamatan = $kecamatan->nama ?? null;
-    $santri->kelurahan = $kelurahan->nama ?? null;
 
     $santri->save();
 

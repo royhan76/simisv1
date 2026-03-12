@@ -182,25 +182,34 @@
 
                 let santri_id = $(this).data("id");
 
-                swal({
-                    title: "Hapus data",
-                    text: "Yakin hapus data ini?",
+                Swal.fire({
+                    title: "Hapus data?",
+                    text: "Data yang dihapus tidak bisa dikembalikan!",
                     icon: "warning",
-                    buttons: ["Batal", "Hapus"],
-                    dangerMode: true,
-                }).then((willDelete) => {
+                    showCancelButton: true,
+                    confirmButtonText: "Hapus",
+                    cancelButtonText: "Batal",
+                    confirmButtonColor: "#d33"
+                }).then((result) => {
 
-                    if (willDelete) {
+                    if (result.isConfirmed) {
 
                         $.ajax({
                             url: "/admin/" + santri_id,
                             type: "DELETE",
+                            data: {
+                                _token: $('meta[name="csrf-token"]').attr('content')
+                            },
 
                             success: function(response) {
 
-                                table.ajax.reload();
+                                $('#tabel-data').DataTable().ajax.reload();
 
-                                swal("Berhasil!", response.message, "success");
+                                Swal.fire(
+                                    "Berhasil!",
+                                    response.message,
+                                    "success"
+                                );
 
                             },
 
