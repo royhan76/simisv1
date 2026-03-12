@@ -15,6 +15,7 @@
         'jenis_kelamin',
         $santri->kelamin ?? ($santri->jenis_kelamin ?? ($santri->j_kelamin ?? 'Laki-laki')),
     );
+    // dd($wali);
 @endphp
 
 @section('body')
@@ -102,7 +103,8 @@
                                             {{-- pendidikan_id --}}
                                             <div class="form-group">
                                                 <label>Pendidikan Terakhir</label>
-                                                <select name="pendidikan_id" class="form-control pendidikan_id"></select>
+                                                <select name="pendidikan_id_santri"
+                                                    class="form-control pendidikan_id_santri"></select>
                                             </div>
                                             <div class="form-group">
                                                 <label>Khos</label>
@@ -118,26 +120,25 @@
                                         <div class="col-md-4 mt-3">
                                             <div class="form-group ">
                                                 <label for="inputFloatingLabel2" class="placeholder">Provinsi</label>
-                                                <select class="propinsi_id form-control input-full required"
-                                                    name="propinsi_id" style=" height: 62px;"></select>
+                                                <select class="santri_provinsi form-control" name="propinsi_id"></select>
 
                                             </div>
                                             <div class="form-group ">
                                                 <label for="inputFloatingLabel2" class="placeholder">Kabupaten</label>
-                                                <select class="kabupaten_id form-control input-full required"
+                                                <select class="santri_kabupaten form-control"
                                                     name="kabupaten_id"></select>
 
                                             </div>
                                             <div class="form-group ">
                                                 <label for="inputFloatingLabel2" class="placeholder">Kecamatan</label>
-                                                <select class="kecamatan_id form-control input-full required"
+                                                <select class="santri_kecamatan form-control"
                                                     name="kecamatan_id"></select>
 
                                             </div>
                                             <div class="form-group ">
                                                 <label for="inputFloatingLabel2"
                                                     class="placeholder">Kelurahan/Desa</label>
-                                                <select class="kelurahan_id form-control input-full required"
+                                                <select class="santri_kelurahan form-control"
                                                     name="kelurahan_id"></select>
 
                                             </div>
@@ -253,17 +254,44 @@
                                                 <input type="text" name="ayah" value="{{ $wali->ayah ?? '' }}"
                                                     class="form-control">
                                             </div>
-                                            <div class="form-group">
-                                                <label>Status</label>
-                                                <input type="text" name="status_ayah"
-                                                    value="{{ $wali->status_ayah ?? '' }}" class="form-control"
-                                                    placeholder="Masih Hidup">
+
+                                            <div class="form-group ">
+                                                <label for="inputFloatingLabel2" class="placeholder">Status Ayah</label>
+                                                <select name="status_ayah" class="form-control">
+
+                                                    <option value="">-- pilih --</option>
+
+                                                    <option value="HIDUP"
+                                                        {{ $wali->status_ayah == 'HIDUP' ? 'selected' : '' }}>
+                                                        HIDUP
+                                                    </option>
+
+                                                    <option value="MENINGGAL"
+                                                        {{ $wali->status_ayah == 'MENINGGAL' ? 'selected' : '' }}>
+                                                        MENINGGAL
+                                                    </option>
+
+                                                </select>
                                             </div>
 
-                                            <div class="form-group">
-                                                <label>Kewarganegaraan</label>
-                                                <input type="text" name="Kewarganegaraan"
-                                                    value="{{ $wali->kewarganegaraan_ayah ?? '' }}" class="form-control">
+                                            <div class="form-group ">
+                                                <label for="inputFloatingLabel2" class="placeholder">Kewarganegaraan
+                                                    Ayah</label>
+                                                <select name="warganegara_ayah" class="form-control">
+
+                                                    <option value="">-- pilih --</option>
+
+                                                    <option value="WNI"
+                                                        {{ $wali->warga_negara_ayah == 'WNI' ? 'selected' : '' }}>
+                                                        WNI
+                                                    </option>
+
+                                                    <option value="WNA"
+                                                        {{ $wali->warga_negara_ayah == 'WNA' ? 'selected' : '' }}>
+                                                        WNA
+                                                    </option>
+
+                                                </select>
                                             </div>
                                             <div class="form-group">
                                                 <label>NIK</label>
@@ -271,9 +299,9 @@
                                                     value="{{ $wali->ayah_nik ?? '' }}" class="form-control">
                                             </div>
                                             <div class="form-group">
-                                                <label>Tempat Lahir</label>
-                                                <input type="text" name="tempat_lahir_ayah"
-                                                    value="{{ $wali->tempat_lahir_ayah ?? '' }}" class="form-control">
+                                                <label>Tempat Lahir Ayah</label>
+                                                <select name="tempat_lahir_ayah"
+                                                    class="form-control tempat_lahir"></select>
                                             </div>
                                             <div class="form-group">
                                                 <label>Tanggal Lahir</label>
@@ -281,9 +309,10 @@
                                                     value="{{ $wali->tgl_lahir_ayah ?? '' }}" class="form-control">
                                             </div>
                                             <div class="form-group">
-                                                <label>Pendidikan Terakhir</label>
-                                                <input type="text" name="pend_ayah"
-                                                    value="{{ $wali->pend_ayah ?? '' }}" class="form-control">
+                                                <label>Pendidikan Terakhir Ayah</label>
+                                                <select name="pendidikan_id_ayah"
+                                                    class="form-control pendidikan_id_ayah"></select>
+
                                             </div>
                                             <div class="form-group">
                                                 <label>Pekerjaan Utama</label>
@@ -298,17 +327,43 @@
                                                 <input type="text" name="ibu" value="{{ $wali->ibu ?? '' }}"
                                                     class="form-control">
                                             </div>
-                                            <div class="form-group">
-                                                <label>Status</label>
-                                                <input type="text" name="status_ibu"
-                                                    value="{{ $wali->status_ibu ?? '' }}" class="form-control"
-                                                    placeholder="Masih Hidup">
+                                            <div class="form-group ">
+                                                <label for="inputFloatingLabel2" class="placeholder">Status Ibu</label>
+                                                <select name="status_ibu" class="form-control">
+
+                                                    <option value="">-- pilih --</option>
+
+                                                    <option value="HIDUP"
+                                                        {{ $wali->status_ibu == 'HIDUP' ? 'selected' : '' }}>
+                                                        HIDUP
+                                                    </option>
+
+                                                    <option value="MENINGGAL"
+                                                        {{ $wali->status_ibu == 'MENINGGAL' ? 'selected' : '' }}>
+                                                        MENINGGAL
+                                                    </option>
+
+                                                </select>
                                             </div>
 
-                                            <div class="form-group">
-                                                <label>Kewarganegaraan</label>
-                                                <input type="text" name="Kewarganegaraan_ibu"
-                                                    value="{{ $wali->kewarganegaraan_ibu ?? '' }}" class="form-control">
+                                            <div class="form-group ">
+                                                <label for="inputFloatingLabel2" class="placeholder">Kewarganegaraan
+                                                    Ibu</label>
+                                                <select name="warganegara_ibu" class="form-control">
+
+                                                    <option value="">-- pilih --</option>
+
+                                                    <option value="WNI"
+                                                        {{ $wali->warga_negara_ibu == 'WNI' ? 'selected' : '' }}>
+                                                        WNI
+                                                    </option>
+
+                                                    <option value="WNA"
+                                                        {{ $wali->warga_negara_ibu == 'WNA' ? 'selected' : '' }}>
+                                                        WNA
+                                                    </option>
+
+                                                </select>
                                             </div>
                                             <div class="form-group">
                                                 <label>NIK</label>
@@ -316,9 +371,9 @@
                                                     class="form-control">
                                             </div>
                                             <div class="form-group">
-                                                <label>Tempat Lahir</label>
-                                                <input type="text" name="tempat_lahir_ibu"
-                                                    value="{{ $wali->tempat_lahir_ibu ?? '' }}" class="form-control">
+                                                <label>Tempat Lahir Ibu</label>
+                                                <select name="tempat_lahir_ibu"
+                                                    class="form-control tempat_lahir_ibu"></select>
                                             </div>
                                             <div class="form-group">
                                                 <label>Tanggal Lahir</label>
@@ -326,9 +381,10 @@
                                                     value="{{ $wali->tgl_lahir_ibu ?? '' }}" class="form-control">
                                             </div>
                                             <div class="form-group">
-                                                <label>Pendidikan Terakhir</label>
-                                                <input type="text" name="pend_ibu"
-                                                    value="{{ $wali->pend_ibu ?? '' }}" class="form-control">
+                                                <label>Pendidikan Terakhir Ibu</label>
+                                                <select name="pendidikan_id_ibu"
+                                                    class="form-control pendidikan_id_ibu"></select>
+
                                             </div>
                                             <div class="form-group">
                                                 <label>Pekerjaan Utama</label>
@@ -363,31 +419,32 @@
 
                                             <div class="form-group">
                                                 <label>Provinsi</label>
-                                                <select name="ayah_propinsi_id" class="form-control propinsi_id"></select>
+                                                <select class="ayah_provinsi form-control"
+                                                    name="ayah_propinsi_id"></select>
                                             </div>
 
                                             <div class="form-group">
                                                 <label>Kabupaten</label>
-                                                <select name="ayah_kabupaten_id"
-                                                    class="form-control kabupaten_id"></select>
+                                                <select class="ayah_kabupaten form-control"
+                                                    name="ayah_kabupaten_id"></select>
                                             </div>
 
                                             <div class="form-group">
                                                 <label>Kecamatan</label>
-                                                <select name="ayah_kecamatan_id"
-                                                    class="form-control kecamatan_id"></select>
+                                                <select class="ayah_kecamatan form-control"
+                                                    name="ayah_kecamatan_id"></select>
                                             </div>
 
                                             <div class="form-group">
                                                 <label>Kelurahan</label>
-                                                <select name="ayah_kelurahan_id"
-                                                    class="form-control kelurahan_id"></select>
+                                                <select class="ayah_kelurahan form-control"
+                                                    name="ayah_kelurahan_id"></select>
                                             </div>
 
                                             <div class="form-group">
                                                 <label>Gang / RT / RW</label>
-                                                <input type="text" name="jalan_ayah" value=""
-                                                    class="form-control">
+                                                <input type="text" name="jalan_ayah" class="form-control"
+                                                    value="{{ old('jalan_ayah', $wali->jalan_ayah ?? '') }}">
                                             </div>
 
                                         </div>
@@ -399,38 +456,39 @@
                                             </div>
                                             <div class="form-check">
                                                 <label class="form-check-label">
-                                                    <input class="form-check-input" type="checkbox" value="">
+                                                    <input class="form-check-input" type="checkbox" id="copy_alamat"
+                                                        name="alamat_sama" value="1">
                                                     <span class="form-check-sign">Sama Dengan Ayah</span>
                                                 </label>
                                             </div>
 
                                             <div class="form-group">
                                                 <label>Provinsi</label>
-                                                <select name="ibu_propinsi_id" class="form-control propinsi_id"></select>
+                                                <select class="ibu_provinsi form-control" name="ibu_propinsi_id"></select>
                                             </div>
 
                                             <div class="form-group">
                                                 <label>Kabupaten</label>
-                                                <select name="ibu_kabupaten_id"
-                                                    class="form-control kabupaten_id"></select>
+                                                <select class="ibu_kabupaten form-control"
+                                                    name="ibu_kabupaten_id"></select>
                                             </div>
 
                                             <div class="form-group">
                                                 <label>Kecamatan</label>
-                                                <select name="ibu_kecamatan_id"
-                                                    class="form-control kecamatan_id"></select>
+                                                <select class="ibu_kecamatan form-control"
+                                                    name="ibu_kecamatan_id"></select>
                                             </div>
 
                                             <div class="form-group">
                                                 <label>Kelurahan</label>
-                                                <select name="ibu_kelurahan_id"
-                                                    class="form-control kelurahan_id"></select>
+                                                <select class="ibu_kelurahan form-control"
+                                                    name="ibu_kelurahan_id"></select>
                                             </div>
 
                                             <div class="form-group">
                                                 <label>Gang / RT / RW</label>
-                                                <input type="text" name="jalan_ibu" value=""
-                                                    class="form-control">
+                                                <input type="text" name="jalan_ibu" class="form-control"
+                                                    value="{{ old('jalan_ibu', $wali->jalan_ibu ?? '') }}">
                                             </div>
 
                                         </div>
@@ -505,57 +563,47 @@
 
         function setDefault(selector, value) {
 
-            if (value) {
+    if (!value) return;
 
-                let option = new Option(value, value, true, true);
-                $(selector).append(option).trigger('change');
+    let option = new Option(value, value, true, true);
 
-            }
+    $(selector)
+        .append(option)
+        .trigger('change');
 
-        }
+}
 
 
 
         $(document).ready(function() {
 
-            initSelect2('.propinsi_id', '/provinsi', '-- Provinsi --');
 
-            initSelect2('.kabupaten_id', '/kabupaten', '-- Kabupaten --', () => ({
-                provinsi_id: $('.propinsi_id').val()
-            }));
 
-            initSelect2('.kecamatan_id', '/kecamatan', '-- Kecamatan --', () => ({
-                kabupaten_id: $('.kabupaten_id').val()
-            }));
-
-            initSelect2('.kelurahan_id', '/alamat', '-- Kelurahan --', () => ({
-                kecamatan_id: $('.kecamatan_id').val()
-            }));
-
-            initSelect2('.pendidikan_id', '/pendidikan', '-- Pendidikan --');
+            initSelect2('.pendidikan_id_santri', '/pendidikan', '-- Pendidikan --');
 
             initSelect2('.tempat_lahir', '/kabupaten', '-- Tempat Lahir --');
+            initSelect2('.tempat_lahir_ayah', '/kabupaten', '-- Tempat Lahir --');
+            initSelect2('.tempat_lahir_ibu', '/kabupaten', '-- Tempat Lahir --');
+
 
             initSelect2('.status_santri', '/status_santri', '-- Status Santri --');
 
             initSelect2('.khos', '/khos', '-- Khos');
             initSelect2('.agama', '/agama', '-- agama --');
-
-
-
+            initSelect2('.pendidikan_id_ibu', '/pendidikan', '-- Pendidikan --');
+            initSelect2('.pendidikan_id_ayah', '/pendidikan', '-- Pendidikan --');
 
 
             setDefault('.status_santri', "{{ old('status_santri', $santri->status) }}");
             setDefault('.khos', "{{ old('khos', $santri->khos) }}");
-            setDefault('.pendidikan_id', "{{ old('pendidikan_id', $santri->pend_terakhir) }}");
+            setDefault('.pendidikan_id_santri', "{{ old('pendidikan_id_santri', $santri->pend_terakhir) }}");
             setDefault('.tempat_lahir', "{{ old('tempat_lahir', $santri->tempat_lahir) }}");
             setDefault('.agama', "{{ old('agama', $santri->agama ?? '') }}");
+            setDefault('.tempat_lahir_ayah', "{{ old('tempat_lahir', $santri->tempat_lahir) }}");
+            setDefault('.tempat_lahir_ibu', "{{ old('tempat_lahir_ibu', $wali->tempat_lahir_ibu) }}");
+            setDefault('.pendidikan_id_ayah', "{{ old('pendidikan_id_ayah', $wali->pend_terakhir_ayah) }}");
+            setDefault('.pendidikan_id_ibu', "{{ old('pendidikan_id_ibu', $wali->pend_terakhir_ibu) }}");
 
-
-            setDefault('.propinsi_id', "{{ old('propinsi_id', $santri->provinsi) }}");
-            setDefault('.kabupaten_id', "{{ old('kabupaten_id', $santri->kabupaten) }}");
-            setDefault('.kecamatan_id', "{{ old('kecamatan_id', $santri->kecamatan) }}");
-            setDefault('.kelurahan_id', "{{ old('kelurahan_id', $santri->kelurahan) }}");
 
         });
 
@@ -564,5 +612,114 @@
             format: "yyyy-mm-dd",
             autoclose: true
         });
+
+        $('#copy_alamat').on('change', function() {
+
+            if ($(this).is(':checked')) {
+
+                // copy select2
+                $('select[name=ibu_propinsi_id]').val($('select[name=ayah_propinsi_id]').val()).trigger('change');
+                $('select[name=ibu_kabupaten_id]').val($('select[name=ayah_kabupaten_id]').val()).trigger('change');
+                $('select[name=ibu_kecamatan_id]').val($('select[name=ayah_kecamatan_id]').val()).trigger('change');
+                $('select[name=ibu_kelurahan_id]').val($('select[name=ayah_kelurahan_id]').val()).trigger('change');
+
+                // copy input jalan
+                $('input[name=jalan_ibu]').val($('input[name=jalan_ayah]').val());
+
+                // disable supaya tidak berubah
+                $('select[name=ibu_propinsi_id]').prop('disabled', true);
+                $('select[name=ibu_kabupaten_id]').prop('disabled', true);
+                $('select[name=ibu_kecamatan_id]').prop('disabled', true);
+                $('select[name=ibu_kelurahan_id]').prop('disabled', true);
+                $('input[name=jalan_ibu]').prop('readonly', true);
+
+            } else {
+
+                // aktifkan lagi kalau di uncheck
+                $('select[name=ibu_propinsi_id]').prop('disabled', false);
+                $('select[name=ibu_kabupaten_id]').prop('disabled', false);
+                $('select[name=ibu_kecamatan_id]').prop('disabled', false);
+                $('select[name=ibu_kelurahan_id]').prop('disabled', false);
+                $('input[name=jalan_ibu]').prop('readonly', false);
+
+            }
+
+        });
+        $('select[name^="ayah_"], input[name=jalan_ayah]').on('change keyup', function() {
+
+            if ($('#copy_alamat').is(':checked')) {
+
+                $('select[name=ibu_propinsi_id]').val($('select[name=ayah_propinsi_id]').val()).trigger('change');
+                $('select[name=ibu_kabupaten_id]').val($('select[name=ayah_kabupaten_id]').val()).trigger('change');
+                $('select[name=ibu_kecamatan_id]').val($('select[name=ayah_kecamatan_id]').val()).trigger('change');
+                $('select[name=ibu_kelurahan_id]').val($('select[name=ayah_kelurahan_id]').val()).trigger('change');
+
+                $('input[name=jalan_ibu]').val($('input[name=jalan_ayah]').val());
+
+            }
+
+        });
+
+
+        initSelect2('.santri_provinsi', '/provinsi', '-- Provinsi --');
+
+        initSelect2('.santri_kabupaten', '/kabupaten', '-- Kabupaten --', () => ({
+            provinsi_id: $('.santri_provinsi').val()
+        }));
+
+        initSelect2('.santri_kecamatan', '/kecamatan', '-- Kecamatan --', () => ({
+            kabupaten_id: $('.santri_kabupaten').val()
+        }));
+
+        initSelect2('.santri_kelurahan', '/alamat', '-- Kelurahan --', () => ({
+            kecamatan_id: $('.santri_kecamatan').val()
+        }));
+
+        initSelect2('.ayah_provinsi', '/provinsi', '-- Provinsi --');
+
+        initSelect2('.ayah_kabupaten', '/kabupaten', '-- Kabupaten --', () => ({
+            provinsi_id: $('.ayah_provinsi').val()
+        }));
+
+        initSelect2('.ayah_kecamatan', '/kecamatan', '-- Kecamatan --', () => ({
+            kabupaten_id: $('.ayah_kabupaten').val()
+        }));
+
+        initSelect2('.ayah_kelurahan', '/alamat', '-- Kelurahan --', () => ({
+            kecamatan_id: $('.ayah_kecamatan').val()
+        }));
+
+        initSelect2('.ibu_provinsi', '/provinsi', '-- Provinsi --');
+
+        initSelect2('.ibu_kabupaten', '/kabupaten', '-- Kabupaten --', () => ({
+            provinsi_id: $('.ibu_provinsi').val()
+        }));
+
+        initSelect2('.ibu_kecamatan', '/kecamatan', '-- Kecamatan --', () => ({
+            kabupaten_id: $('.ibu_kabupaten').val()
+        }));
+
+        initSelect2('.ibu_kelurahan', '/alamat', '-- Kelurahan --', () => ({
+            kecamatan_id: $('.ibu_kecamatan').val()
+        }));
+
+        setDefault('.ayah_provinsi', "{{ old('ayah_propinsi_id', $wali->provinsi_ayah ?? '') }}");
+        setDefault('.ayah_kabupaten', "{{ old('ayah_kabupaten_id', $wali->kabupaten_ayah ?? '') }}");
+        setDefault('.ayah_kecamatan', "{{ old('ayah_kecamatan_id', $wali->kecamatan_ayah ?? '') }}");
+        setDefault('.ayah_kelurahan', "{{ old('ayah_kelurahan_id', $wali->kelurahan_ayah ?? '') }}");
+
+
+        setDefault('.ibu_provinsi', "{{ old('ibu_propinsi_id', $wali->provinsi_ibu ?? '') }}");
+        setDefault('.ibu_kabupaten', "{{ old('ibu_kabupaten_id', $wali->kabupaten_ibu ?? '') }}");
+        setDefault('.ibu_kecamatan', "{{ old('ibu_kecamatan_id', $wali->kecamatan_ibu ?? '') }}");
+        setDefault('.ibu_kelurahan', "{{ old('ibu_kelurahan_id', $wali->kelurahan_ibu ?? '') }}");
+
+
+        setDefault('.santri_provinsi', "{{ old('santri_propinsi_id', $santri->provinsi ?? '') }}");
+        setDefault('.santri_kabupaten', "{{ old('santri_kabupaten_id', $santri->kabupaten ?? '') }}");
+        setDefault('.santri_kecamatan', "{{ old('santri_kecamatan_id', $santri->kecamatan ?? '') }}");
+        setDefault('.santri_kelurahan', "{{ old('santri_kelurahan_id', $santri->kelurahan ?? '') }}");
+
+
     </script>
 @endpush
