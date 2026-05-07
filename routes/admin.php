@@ -2,7 +2,9 @@
 
 use Illuminate\Support\Facades\Route;
 
-Route::prefix('admin')->middleware('role:admin,sekretaris')->group(function () {
+Route::prefix('admin')
+    ->middleware(['auth', 'role:admin,sekretaris'])
+    ->group(function () {
 
     Route::get('/', 'AdminController@halamanDashboard')->name('admin');
 
@@ -41,7 +43,10 @@ Route::prefix('admin')->middleware('role:admin,sekretaris')->group(function () {
 
     Route::delete('{id}', 'AdminController@destroy')->name('santri.destroy');
     Route::get('{id}/edit', 'AdminController@edit');
-    Route::get('{id}', 'AdminController@show');
+    Route::get('{id}', 'AdminController@show')->where('id', '[0-9]+');
     Route::put('update/{id}', 'AdminController@update');
 
+
 });
+
+

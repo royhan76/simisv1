@@ -5,6 +5,9 @@ use Illuminate\Support\Facades\Route;
 
 Auth::routes();
 
+require base_path('routes/admin.php');
+require base_path('routes/bendahara.php');
+require base_path('routes/sekretaris.php');
 
 Route::get('/', function () {
     return view('auth.login');

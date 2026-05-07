@@ -41,7 +41,13 @@ return [
                 [
                     'title' => 'Pengguna',
                     'url' => '/admin/users'
+                ],
+
+                [
+                    'title' => 'Master Bendahara',
+                    'url' => '/admin/bendahara/mBendahara'
                 ]
+
 
             ]
         ],
@@ -77,6 +83,20 @@ return [
             ]
         ],
 
+        [
+            'title' => 'Bendahara',
+            'icon' => 'fas fa-money-bill',
+            'roles' => ['admin','bendahara'],
+            'submenu' => [
+
+                [
+                    'title' => 'Pembayaran Santri',
+                    'url' => 'admin/bendahara'
+                ]
+
+            ]
+        ],
+
 
         [
             'title' => 'Ma\'arif',
@@ -106,12 +126,12 @@ return [
             ]
         ],
 
-        [
-            'title' => 'Keuangan',
-            'icon' => 'fas fa-money-bill',
-            'roles' => ['admin','bendahara'],
-            'url' => '/bendahara'
-        ],
+        // [
+        //     'title' => 'Keuangan',
+        //     'icon' => 'fas fa-money-bill',
+        //     'roles' => ['admin','bendahara'],
+        //     'url' => '/bendahara'
+        // ],
 
     ]
 

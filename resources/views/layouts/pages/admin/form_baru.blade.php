@@ -116,7 +116,7 @@
                                 <div class="col-md-4 mt-3">
 
                                     <div class="form-group ">
-                                        <label for="inputFloatingLabel2" class="placeholder">Gang/Rt/Rw</label>
+                                        <label for="inputFloatingLabel2" class="placeholder">Alamat</label>
                                         <input id="inputFloatingLabel2" id="jalan" name="jalan" type="text"
                                             class="form-control input-full">
                                     </div>

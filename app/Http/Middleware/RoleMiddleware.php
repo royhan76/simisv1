@@ -8,20 +8,16 @@ use Illuminate\Support\Facades\Auth;
 class RoleMiddleware
 {
     public function handle($request, Closure $next, ...$roles)
-    {
+{
 
+    $userRole = strtolower(auth()->user()->role);
 
-        if (!Auth::check()) {
-            return redirect('/login');
-        }
+    $roles = array_map('strtolower', $roles);
 
-        $user = Auth::user();
-// dd($user->role, $roles);
-        if (in_array($user->role, $roles)) {
-            return $next($request);
-        }
-
+    if (!in_array($userRole, $roles)) {
         abort(403, 'ANDA TIDAK MEMILIKI AKSES KE HALAMAN INI');
-
     }
+
+    return $next($request);
+}
 }

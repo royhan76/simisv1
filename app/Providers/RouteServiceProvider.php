@@ -68,29 +68,29 @@ class RouteServiceProvider extends ServiceProvider
         ->namespace($this->namespace)
         ->group(base_path('routes/web.php'));
 
-    Route::middleware(['web','auth'])
-        ->namespace($this->namespace)
-        ->group(base_path('routes/admin.php'));
+    // Route::middleware(['web','auth'])
+    //     ->namespace($this->namespace)
+    //     ->group(base_path('routes/admin.php'));
 
-    Route::middleware(['web','auth','role:sekretaris'])
-        ->namespace($this->namespace)
-        ->group(base_path('routes/sekretaris.php'));
+    // Route::middleware(['web','auth','role:sekretaris'])
+    //     ->namespace($this->namespace)
+    //     ->group(base_path('routes/sekretaris.php'));
 
-    Route::middleware(['web','auth','role:bendahara'])
-        ->namespace($this->namespace)
-        ->group(base_path('routes/bendahara.php'));
+    // Route::middleware(['web','auth','role:bendahara'])
+    //     ->namespace($this->namespace)
+    //     ->group(base_path('routes/bendahara.php'));
 
-    Route::middleware(['web','auth','role:maarif'])
-        ->namespace($this->namespace)
-        ->group(base_path('routes/maarif.php'));
+    // Route::middleware(['web','auth','role:maarif'])
+    //     ->namespace($this->namespace)
+    //     ->group(base_path('routes/maarif.php'));
 
-    Route::middleware(['web','auth','role:keamanan'])
-        ->namespace($this->namespace)
-        ->group(base_path('routes/keamanan.php'));
+    // Route::middleware(['web','auth','role:keamanan'])
+    //     ->namespace($this->namespace)
+    //     ->group(base_path('routes/keamanan.php'));
 
-    Route::middleware(['web','auth'])
-        ->namespace($this->namespace)
-        ->group(base_path('routes/wali.php'));
+    // Route::middleware(['web','auth'])
+    //     ->namespace($this->namespace)
+    //     ->group(base_path('routes/wali.php'));
 }
 
     /**
