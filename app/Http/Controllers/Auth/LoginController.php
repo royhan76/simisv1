@@ -69,7 +69,7 @@ class LoginController extends Controller
         }
 
         if ($user->role == 'bendahara') {
-            return redirect('/bendahara');
+            return redirect('/admin/bendahara');
         }
 
         if ($user->role == 'maarif') {

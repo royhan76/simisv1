@@ -82,6 +82,18 @@ return [
 
             ]
         ],
+        [
+            'title' => 'Master',
+            'icon' => 'fas fa-layer-group',
+            'roles' => ['admin','bendahara'],
+            'submenu' => [
+
+                 [
+                    'title' => 'Master Bendahara',
+                    'url' => '/admin/bendahara/mBendahara'
+                ]
+            ]
+        ],
 
         [
             'title' => 'Bendahara',
@@ -92,10 +104,12 @@ return [
                 [
                     'title' => 'Pembayaran Santri',
                     'url' => 'admin/bendahara'
-                ]
+                ],
+
 
             ]
         ],
+
 
 
         [
