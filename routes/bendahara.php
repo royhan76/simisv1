@@ -16,4 +16,9 @@ Route::prefix('admin/bendahara')
 
     Route::get('/detail/{id}', 'BendaharaController@show')
         ->where('id', '[0-9]+');
+
+    Route::get('/nominal/data', 'BendaharaController@getNominal');
+    Route::post('/nominal/store', 'BendaharaController@storeNominal');
+    Route::post('/nominal/update', 'BendaharaController@updateNominal');
+    Route::post('/nominal/delete', 'BendaharaController@deleteNominal');
 });
