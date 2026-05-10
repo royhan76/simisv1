@@ -25,7 +25,7 @@
                             <div class="col-md-6">
 
                                 <button class="btn btn-primary btn-sm" data-toggle="modal" data-target="#modalTambah">
-                                    Tambah Pengguna
+                                    Tambah Nominal Pembayaran
                                 </button>
 
                             </div>
