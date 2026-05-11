@@ -28,4 +28,8 @@ class Santris extends Authenticatable
         return $this->hasMany('wali', 'santri', 'santri_id', 'santri_id');
     }
 
+    public function pembayarans()
+    {
+        return $this->hasMany(Pembayaran::class, 'santri_id');
+    }
 }

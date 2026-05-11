@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\MasterPembayaran; // ✅ sesuai model kamu
+use App\Santris;
+
 
 class BendaharaController extends Controller
 {
@@ -45,9 +47,41 @@ class BendaharaController extends Controller
     }
 
     public function deleteNominal(Request $request)
-{
-    MasterPembayaran::find($request->id)->delete();
+    {
+        MasterPembayaran::find($request->id)->delete();
 
-    return response()->json(['success' => true]);
+        return response()->json(['success' => true]);
+    }
+
+    public function pembayaran()
+    {
+        return view('layouts.pages.admin.bendahara.pembayaran.index');
+    }
+
+    public function getSantriPembayaran()
+    {
+        return response()->json([
+            'data' => Santris::latest()->get()
+        ]);
+    }
+
+    public function detailPembayaran($santri_id)
+{
+    $santri = Santris::where('santri_id',$santri_id)->first();
+
+    return response()->json([
+    'nama'  => $santri->nama,
+    'nik'   => $santri->nik,
+    'khos'  => $santri->khos,
+    'kamar' => $santri->kamar,
+    'foto'  => $santri->foto ?? 'assets/images/muslim.png', //https://sim.ppmissarang.com/storage/images/muslim.png
+]);
 }
+
+    public function getMasterPembayaran()
+    {
+        return response()->json([
+            'data' => MasterPembayaran::all()
+        ]);
+    }
 }

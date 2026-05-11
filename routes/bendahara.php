@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 
+
 // ================= BENDAHARA =================
 Route::prefix('admin/bendahara')
     ->middleware(['auth', 'role:admin,bendahara'])
@@ -21,4 +22,12 @@ Route::prefix('admin/bendahara')
     Route::post('/nominal/store', 'BendaharaController@storeNominal');
     Route::post('/nominal/update', 'BendaharaController@updateNominal');
     Route::post('/nominal/delete', 'BendaharaController@deleteNominal');
+
+
+    Route::get('/pembayaran', 'BendaharaController@pembayaran');
+    Route::get('/pembayaran/data', 'BendaharaController@getSantriPembayaran');
+
+    Route::get('/pembayaran/detail/{santri_id}','BendaharaController@detailPembayaran');
+
+    Route::get('/master-pembayaran/data','BendaharaController@getMasterPembayaran');
 });
