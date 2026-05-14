@@ -34,11 +34,7 @@ class CreatePembayaranUnitTable extends Migration
 
             $table->timestamps();
 
-            // FOREIGN KEY
-            $table->foreign('santri_id')
-                ->references('santri_id')
-                ->on('santri')
-                ->onDelete('cascade');
+
 
         });
     }
