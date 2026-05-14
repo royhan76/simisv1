@@ -30,4 +30,12 @@ class Pembayaran extends Model
     {
         return $this->belongsTo(MasterPembayaran::class, 'master_pembayaran_id');
     }
+
+    public function masterPembayaran()
+    {
+        return $this->belongsTo(
+            MasterPembayaran::class,
+            'master_pembayaran_id'
+        );
+    }
 }

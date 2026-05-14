@@ -1,7 +1,7 @@
 @extends('master')
 
 @php
-     $photo = !empty($foto?->path) ? 'storage/' . str_replace('public/', '', $foto->path) : 'storage/images/muslim.png';
+    $photo = !empty($foto?->path) ? 'storage/' . str_replace('public/', '', $foto->path) : 'storage/images/muslim.png';
 @endphp
 
 @section('body')
@@ -33,7 +33,7 @@
                                 <thead>
                                     <tr>
                                         <th>No</th>
-                                        <th>Foto</th>
+                                        {{-- <th>Foto</th> --}}
                                         <th>Nama</th>
                                         <th>Kamar</th>
                                         <th>Status</th>
@@ -54,19 +54,33 @@
     </div>
 
     @include('layouts.pages.admin.bendahara.pembayaran.modal')
-
 @endsection
 
 @push('javascript')
     <script>
         let table;
 
+        // =========================================
+        // CSRF TOKEN
+        // =========================================
+        $.ajaxSetup({
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            }
+        });
+
+        // =========================================
+        // READY
+        // =========================================
         $(document).ready(function() {
 
             loadTable();
 
         });
 
+        // =========================================
+        // LOAD DATATABLE
+        // =========================================
         function loadTable() {
 
             table = $('#tabel-santri').DataTable({
@@ -80,29 +94,10 @@
 
                     {
                         data: null,
-                        className: 'text-center'
-                    },
-
-                    {
-                        data: 'foto',
                         className: 'text-center',
 
-                        render: function(data) {
-
-                            if (!data) {
-
-                                return `
-                                <img src="{{ asset($photo) }}" alt="Avatar Santri" class="rounded-circle img-fluid shadow-sm"
-                                style="width:110px; height:110px; object-fit:cover;">
-                            `;
-                            }
-
-                            return `
-                            <img src="/storage/${data}"
-                            width="45"
-                            height="45"
-                            class="rounded-circle">
-                        `;
+                        render: function(data, type, row, meta) {
+                            return meta.row + 1;
                         }
                     },
 
@@ -133,18 +128,251 @@
 
                                 <button class="btn btn-success btn-sm"
                                     onclick="openBayar(${row.santri_id})">
+
                                     Bayar
+
                                 </button>
 
                             </div>
                         `;
                         }
                     }
-                ],
 
-                rowCallback: function(row, data, index) {
+                ]
 
-                    $('td:eq(0)', row).html(index + 1);
+            });
+
+        }
+
+        // =========================================
+        // OPEN MODAL BAYAR
+        // =========================================
+        function openBayar(santri_id) {
+
+            // RESET FORM
+            $('#formBayar')[0].reset();
+            // =====================================
+            // SET TAHUN HIJRIYAH
+            // =====================================
+            $('#tahun_hijriyah').val(getHijriYear());
+
+
+
+            // SET SANTRI ID
+            $('#bayar_santri_id').val(santri_id);
+
+            // =====================================
+            // LOAD NOMINAL SYAHRIYAH
+            // =====================================
+            $.ajax({
+
+                url: '/admin/bendahara/pembayaran/nominal/syahriyah',
+                type: 'GET',
+
+                success: function(res) {
+
+                    if (res) {
+
+                        $('#nominal_syahriyah').val(
+                            parseInt(res.nominal)
+                            .toLocaleString('id-ID')
+                        );
+
+                    }
+
+                }
+
+            });
+
+
+
+            // RESET CHECKBOX BULAN
+            $('.bulan-check')
+                .prop('checked', false)
+                .prop('disabled', false);
+
+            $('.bulan-table td')
+                .removeClass('bg-success text-white');
+
+            // =====================================
+            // DETAIL SANTRI
+            // =====================================
+            $.ajax({
+
+                url: '/admin/bendahara/pembayaran/detail/' + santri_id,
+                type: 'GET',
+
+                success: function(res) {
+
+                    console.log(res);
+
+                    // FOTO
+                    $('#foto_santri').attr(
+                        'src',
+                        res.foto ?
+                        '/storage/' + res.foto :
+                        '/assets/img/default.png'
+                    );
+
+                    // DETAIL
+                    $('#nama').val(res.nama ?? '-');
+                    $('#nik').val(res.nik ?? '-');
+                    $('#khos').val(res.khos ?? '-');
+                    $('#kamar').val(res.kamar ?? '-');
+
+                    // SHOW MODAL
+                    $('#modalBayar').modal('show');
+
+                },
+
+                error: function(err) {
+
+                    console.log(err);
+
+                    Swal.fire(
+                        'Gagal!',
+                        'Detail santri gagal dimuat',
+                        'error'
+                    );
+
+                }
+
+            });
+
+            // =====================================
+            // LOAD MASTER PEMBAYARAN
+            // =====================================
+            $.ajax({
+
+                url: '/admin/bendahara/master-pembayaran/data',
+                type: 'GET',
+
+                success: function(res) {
+
+                    $('#listPembayaranUnit').html('');
+
+                    // ============================
+                    // CEK PEMBAYARAN UNIT
+                    // ============================
+                    $.ajax({
+
+                        url: '/admin/bendahara/pembayaran/unit/cek/' + santri_id,
+                        type: 'GET',
+
+                        success: function(unitSudahBayar) {
+
+                            $.each(res.data, function(i, item) {
+
+                                let checked = '';
+                                let disabled = '';
+
+                                // CEK SUDAH BAYAR
+                                if (unitSudahBayar.includes(item.name)) {
+
+                                    checked = 'checked';
+                                    disabled = 'disabled';
+
+                                }
+
+                                $('#listPembayaranUnit').append(`
+
+                    <div class="border border-payment rounded p-3 mb-3
+                        ${checked ? 'bg-success text-white' : ''}">
+
+                        <div class="custom-control custom-checkbox">
+
+                            <input type="checkbox"
+                                class="custom-control-input pembayaran-check"
+
+                                id="unit_${item.id}"
+
+                                data-name="${item.name}"
+                                data-nominal="${item.nominal}"
+                                data-bulanan="${item.bulanan}"
+
+                                name="unit_id[]"
+                                value="${item.id}"
+
+                                ${checked}
+                                ${disabled}
+                            >
+
+                            <label class="custom-control-label"
+                                for="unit_${item.id}">
+
+                                <div class="d-flex justify-content-between">
+
+                                    <div>
+                                        <b>${item.name}</b>
+                                    </div>
+
+                                    <div class="${checked ? 'text-white' : 'text-success'}">
+
+                                        Rp ${parseInt(item.nominal)
+                                            .toLocaleString('id-ID')}
+
+                                    </div>
+
+                                </div>
+
+                            </label>
+
+                        </div>
+
+                    </div>
+
+                `);
+
+                            });
+
+                        }
+
+                    });
+
+                }
+
+            });
+
+            // =====================================
+            // CEK BULAN YANG SUDAH DIBAYAR
+            // =====================================
+            $.ajax({
+
+                url: '/admin/bendahara/pembayaran/cek/' + santri_id,
+                type: 'GET',
+
+                success: function(res) {
+
+                    console.log(res);
+
+                    $.each(res, function(i, item) {
+
+                        $('.bulan-check').each(function() {
+
+                            let valueCheckbox = $(this).val().trim().toLowerCase();
+                            let bulanDb = item.bulan.trim().toLowerCase();
+
+                            if (valueCheckbox === bulanDb) {
+
+                                $(this)
+                                    .prop('checked', true)
+                                    .prop('disabled', true);
+
+                                $(this)
+                                    .closest('td')
+                                    .addClass('bg-success text-white');
+
+                            }
+
+                        });
+
+                    });
+
+                },
+
+                error: function(err) {
+
+                    console.log(err);
 
                 }
 
@@ -152,96 +380,81 @@
 
         }
 
-        function bayar(id) {
-            alert('Modal pembayaran santri id : ' + id);
-        }
+        // =========================================
+        // SUBMIT FORM
+        // =========================================
+        $('#formBayar').submit(function(e) {
 
+            e.preventDefault();
 
-        function openBayar(santri_id) {
-            $('#bayar_santri_id').val(santri_id);
+            console.log($(this).serialize());
 
             $.ajax({
-                url: '/admin/bendahara/pembayaran/detail/' + santri_id,
-                method: 'GET',
+
+                url: '/admin/bendahara/pembayaran/store',
+                type: 'POST',
+                data: $(this).serialize(),
+
+                beforeSend: function() {
+
+                    $('.btn-success').prop('disabled', true);
+
+                },
 
                 success: function(res) {
 
-    console.log(res);
+                    console.log(res);
 
-    $('#nama').val(res.nama);
-    $('#kk').val(res.nik);
-    $('#khos').val(res.khos);
-    $('#detail_kamar').val(
-        res.kamar ?? '-'
-    );
+                    Swal.fire(
+                        'Berhasil!',
+                        res.message,
+                        'success'
+                    );
 
-    $('#foto_santri').attr(
-        'src',
-        '/' + res.foto
-    );
+                    $('#modalBayar').modal('hide');
 
-    $('#modalBayar').modal('show');
-}
+                    $('#formBayar')[0].reset();
+
+                    table.ajax.reload();
+
+                },
+
+                error: function(xhr) {
+
+                    console.log(xhr.responseJSON);
+
+                    Swal.fire(
+                        'Gagal!',
+                        'Terjadi kesalahan saat menyimpan pembayaran',
+                        'error'
+                    );
+
+                },
+
+                complete: function() {
+
+                    $('.btn-success').prop('disabled', false);
+
+                }
+
             });
 
-            $.ajax({
-                url: '/admin/bendahara/master-pembayaran/data',
-                method: 'GET',
-
-                success: function(res)
-{
-    $('#listPembayaran').html('');
-
-    $.each(res.data, function(i, item){
-
-        $('#listPembayaran').append(`
-
-            <div class="border rounded p-3 mb-3">
-
-                <div class="custom-control custom-checkbox">
-
-                    <input type="checkbox"
-                        class="custom-control-input pembayaran-check"
-                        id="bayar_${item.id}"
-                        name="pembayaran[]"
-                        value="${item.id}"
-                        data-nominal="${item.nominal}">
-
-                    <label class="custom-control-label"
-                        for="bayar_${item.id}">
-
-                        <b>${item.name}</b>
-
-                        <span class="ml-3 text-success">
-                            Rp ${parseInt(item.nominal)
-                                .toLocaleString('id-ID')}
-                        </span>
-
-                    </label>
-
-                </div>
-
-            </div>
-
-        `);
-
-    });
-
-}
-            });
-        }
-
-        $('#master_pembayaran_id').change(function() {
-
-            let nominal = $(this)
-                .find(':selected')
-                .data('nominal');
-
-            if (nominal) {
-                $('#nominal').val(
-                    'Rp ' + nominal.toLocaleString('id-ID')
-                );
-            }
         });
+
+        // =========================================
+        // GET TAHUN HIJRIYAH
+        // =========================================
+        function getHijriYear() {
+
+            const today = new Date();
+
+            // KONVERSI KASAR MASEHI -> HIJRIYAH
+            const hijriYear = Math.floor(
+                ((today.getFullYear() - 622) * 33) / 32
+            );
+
+            return hijriYear + ' H';
+
+        }
     </script>
 @endpush

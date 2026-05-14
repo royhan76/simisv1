@@ -64,6 +64,7 @@ return [
             ]
         ],
 
+
         [
             'title' => 'Pendaftaran Santri',
             'icon' => 'fas fa-pen-square',
@@ -85,7 +86,7 @@ return [
         [
             'title' => 'Master',
             'icon' => 'fas fa-layer-group',
-            'roles' => ['admin','bendahara'],
+            'roles' => ['bendahara'],
             'submenu' => [
 
                  [

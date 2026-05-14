@@ -32,4 +32,22 @@ class Santris extends Authenticatable
     {
         return $this->hasMany(Pembayaran::class, 'santri_id');
     }
+
+    public function pembayaranUnit()
+    {
+        return $this->hasMany(
+            PembayaranUnit::class,
+            'santri_id',
+            'santri_id'
+        );
+    }
+
+    public function syahriyah()
+    {
+        return $this->hasMany(
+            Syahriyah::class,
+            'santri_id',
+            'santri_id'
+        );
+    }
 }

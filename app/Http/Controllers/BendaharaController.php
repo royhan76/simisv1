@@ -5,6 +5,10 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\MasterPembayaran; // ✅ sesuai model kamu
 use App\Santris;
+use App\Pembayaran;
+use App\PembayaranUnit;
+use App\Syahriyah;
+use Illuminate\Support\Facades\DB;
 
 
 class BendaharaController extends Controller
@@ -84,4 +88,121 @@ class BendaharaController extends Controller
             'data' => MasterPembayaran::all()
         ]);
     }
+
+  public function storePembayaran(Request $request)
+    {
+        // dd($request);
+        DB::beginTransaction();
+
+        try {
+
+            // =====================================
+            // SIMPAN PEMBAYARAN UNIT
+            // =====================================
+
+            if ($request->unit_id) {
+
+                foreach ($request->unit_id as $unitId) {
+
+                    $unit = MasterPembayaran::find($unitId);
+
+                    if ($unit) {
+
+                        $cekUnit = PembayaranUnit::where('santri_id', $request->santri_id)
+                            ->where('nama_unit', $unit->name)
+                            ->first();
+
+                        if (!$cekUnit) {
+
+                            PembayaranUnit::create([
+                                'santri_id'      => $request->santri_id,
+                                'nama_unit'      => $unit->name,
+                                'nominal'        => $unit->nominal,
+                                'tanggal_bayar'  => now(),
+                                'keterangan'     => $request->keterangan,
+                            ]);
+
+                        }
+
+                    }
+
+                }
+
+            }
+
+            // =====================================
+            // SIMPAN SYAHRIYAH
+            // =====================================
+
+            if ($request->bulan) {
+
+                foreach ($request->bulan as $bulan) {
+
+                    // CEK DUPLIKAT
+                    $cek = Syahriyah::where('santri_id', $request->santri_id)
+                        ->where('tahun_hijriyah', $request->tahun_hijriyah)
+                        ->where('bulan', $bulan)
+                        ->first();
+
+                    if (!$cek) {
+
+                        Syahriyah::create([
+                            'santri_id'        => $request->santri_id,
+                            'tahun_hijriyah'   => $request->tahun_hijriyah,
+                            'bulan'            => $bulan,
+                            'nominal'          => $request->nominal_syahriyah,
+                            'tanggal_bayar'    => now(),
+                            'keterangan'       => $request->keterangan,
+                        ]);
+
+                    }
+
+                }
+
+            }
+
+            DB::commit();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Pembayaran berhasil disimpan'
+            ]);
+
+        } catch (\Exception $e) {
+
+            DB::rollback();
+
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage()
+            ], 500);
+
+        }
+    }
+
+    public function cekPembayaran($santri_id)
+        {
+            $data = Syahriyah::where('santri_id', $santri_id)
+                ->select('bulan')
+                ->get();
+
+            return response()->json($data);
+        }
+
+    public function cekPembayaranUnit($santri_id)
+    {
+        $data = PembayaranUnit::where('santri_id', $santri_id)
+            ->pluck('nama_unit');
+
+        return response()->json($data);
+    }
+
+    public function getNominalSyahriyah()
+    {
+        $data = MasterPembayaran::where('name', 'Syahriyah')
+            ->first();
+
+        return response()->json($data);
+    }
+
 }

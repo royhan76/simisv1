@@ -30,4 +30,17 @@ Route::prefix('admin/bendahara')
     Route::get('/pembayaran/detail/{santri_id}','BendaharaController@detailPembayaran');
 
     Route::get('/master-pembayaran/data','BendaharaController@getMasterPembayaran');
+
+    Route::post('/pembayaran/store','BendaharaController@storePembayaran');
+
+    Route::get('/pembayaran/cek/{santri_id}','BendaharaController@cekPembayaran');
+
+    Route::get('/pembayaran/unit/cek/{santri_id}','BendaharaController@cekPembayaranUnit');
+
+    Route::get(
+    '/pembayaran/nominal/syahriyah',
+    'BendaharaController@getNominalSyahriyah'
+);
+
+
 });
