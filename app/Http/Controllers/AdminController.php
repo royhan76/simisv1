@@ -13,6 +13,8 @@ use App\ThnMasukModel;
 use App\KabupatenModel;
 use App\ProvinsiModel;
 use App\KecamatanModel;
+use App\PendidikanModel;
+use App\KhosModel;
 use App\Alamat;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -310,35 +312,56 @@ class AdminController extends Controller
 
 public function update(Request $request, $id)
 {
-    // dd($request->all());
+    $request->validate([
+
+        'photo' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+        'dok_kk' => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:4096',
+
+    ]);
 
     $santri = Santris::findOrFail($id);
-    $wali   = WaliModel::findOrFail($id);
 
+    $wali = WaliModel::where('santri_id', $id)->first();
 
-// ================= PHOTO =================
+    if (!$wali) {
 
-    $data = Photo::where('santri_id', $id)->first();
+        $wali = new WaliModel();
+        $wali->santri_id = $id;
+
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | PHOTO
+    |--------------------------------------------------------------------------
+    */
+
+    $photo = Photo::where('santri_id', $id)->first();
 
     if ($request->hasFile('photo')) {
 
-        if ($data && $data->path) {
-            Storage::disk('public')->delete($data->path);
+        if ($photo && $photo->path) {
+            Storage::disk('public')->delete($photo->path);
         }
 
         $path = $request->file('photo')->store('images', 'public');
 
-        if (!$data) {
-            $data = new Photo();
-            $data->santri_id = $id;
+        if (!$photo) {
+
+            $photo = new Photo();
+            $photo->santri_id = $id;
+
         }
 
-        $data->path = $path;
-        $data->save();
+        $photo->path = $path;
+        $photo->save();
     }
 
-
-// ================= DOK KK =================
+    /*
+    |--------------------------------------------------------------------------
+    | DOK KK
+    |--------------------------------------------------------------------------
+    */
 
     $dok_kk = DokKkModel::where('id_santri', $id)->first();
 
@@ -351,206 +374,348 @@ public function update(Request $request, $id)
         $path = $request->file('dok_kk')->store('images', 'public');
 
         if (!$dok_kk) {
+
             $dok_kk = new DokKkModel();
             $dok_kk->id_santri = $id;
+
         }
 
         $dok_kk->path = $path;
         $dok_kk->save();
     }
 
+    /*
+    |--------------------------------------------------------------------------
+    | SANTRI
+    |--------------------------------------------------------------------------
+    */
 
-// ================= UPDATE SANTRI =================
+    $khosSantri = KhosModel::find($request->khos);
 
-    $santri->no_induk  = $request->no_induk;
+    $kabupatenSantri = KabupatenModel::find($request->tempat_lahir);
+
+    $tempat_lahir_santri =
+        $kabupatenSantri
+        ? $kabupatenSantri->nama
+        : $santri->tempat_lahir;
+
+    $santri->no_induk = $request->no_induk;
     $santri->nama = $request->nama_lengkap;
     $santri->status = $request->status_santri;
-    $santri->khos = $request->khos;
+    $santri->khos = $khosSantri->nama_khos ?? $santri->khos;
     $santri->kk = $request->kk;
     $santri->nik = $request->nik;
-    $santri->tempat_lahir = $request->tempat_lahir;
+    $santri->tempat_lahir = $tempat_lahir_santri;
     $santri->tgl_lahir = $request->tgl_lahir;
     $santri->nisn = $request->nisn;
-    // $santri->provinsi = $request->propinsi_id;
-    // $santri->kabupaten = $request->kabupaten_id;
-    // $santri->kecamatan = $request->kecamatan_id;
-    // $santri->kelurahan = $request->kelurahan_id;
-    // $santri->jalan = $request->jalan;
     $santri->kodepos = $request->kode_pos;
     $santri->no_tlp = $request->no_tlp;
-    $santri->kelamin = $request->jenis_kelamin ?? $santri->kelamin;
-    $santri->anak_ke = $request->anak_ke ?? $santri->anak_ke;
-    $santri->j_saudara = $request->j_saudara ?? $santri->j_saudara;
 
-    // ================= ALAMAT SANTRI =================
+    $santri->kelamin =
+        $request->jenis_kelamin ?? $santri->kelamin;
+
+    $santri->anak_ke =
+        $request->anak_ke ?? $santri->anak_ke;
+
+    $santri->j_saudara =
+        $request->j_saudara ?? $santri->j_saudara;
+
+    /*
+    |--------------------------------------------------------------------------
+    | ALAMAT SANTRI
+    |--------------------------------------------------------------------------
+    */
 
     if ($request->propinsi_id) {
-        $santri->provinsi = ProvinsiModel::where('id', $request->propinsi_id)->value('nama') ?? $santri->provinsi;
+        $santri->provinsi =
+            ProvinsiModel::where('id', $request->propinsi_id)
+            ->value('nama') ?? $santri->provinsi;
     }
 
     if ($request->kabupaten_id) {
-        $santri->kabupaten = KabupatenModel::where('id', $request->kabupaten_id)->value('nama') ?? $santri->kabupaten;
+        $santri->kabupaten =
+            KabupatenModel::where('id', $request->kabupaten_id)
+            ->value('nama') ?? $santri->kabupaten;
     }
 
     if ($request->kecamatan_id) {
-        $santri->kecamatan = KecamatanModel::where('id', $request->kecamatan_id)->value('nama') ?? $santri->kecamatan;
+        $santri->kecamatan =
+            KecamatanModel::where('id', $request->kecamatan_id)
+            ->value('nama') ?? $santri->kecamatan;
     }
 
     if ($request->kelurahan_id) {
-        $santri->kelurahan = Alamat::where('id', $request->kelurahan_id)->value('nama') ?? $santri->kelurahan;
+        $santri->kelurahan =
+            Alamat::where('id', $request->kelurahan_id)
+            ->value('nama') ?? $santri->kelurahan;
     }
 
     if ($request->filled('jalan')) {
         $santri->jalan = $request->jalan;
     }
 
+    /*
+    |--------------------------------------------------------------------------
+    | AGAMA
+    |--------------------------------------------------------------------------
+    */
+
     $agamaValue = $request->agama;
-    if ($agamaValue !== null && ctype_digit((string) $agamaValue)) {
-        $agamaValue = optional(AgamaModel::find($agamaValue))->agama ?? $agamaValue;
-    }
-    $pendidikanSantri = $request->pendidikan_id_santri;
 
-    if ($pendidikanSantri) {
-        $pendidikanSantri = \App\PendidikanModel::where('id_pendidikan', $pendidikanSantri)
-            ->value('categori');
-    }
+    if (
+        $agamaValue !== null &&
+        ctype_digit((string) $agamaValue)
+    ) {
 
-    if ($request->filled('pendidikan_id_santri')) {
-
-    $pendidikanSantri = \App\PendidikanModel::where('id_pendidikan', $request->pendidikan_id_santri)
-        ->value('categori');
-
-    $santri->pend_terakhir = $pendidikanSantri ?? $santri->pend_terakhir;
+        $agamaValue =
+            optional(AgamaModel::find($agamaValue))->agama
+            ?? $agamaValue;
 
     }
 
     $santri->agama = $agamaValue;
+
+    /*
+    |--------------------------------------------------------------------------
+    | PENDIDIKAN SANTRI
+    |--------------------------------------------------------------------------
+    */
+
+    if ($request->filled('pendidikan_id_santri')) {
+
+        $pendidikanSantri =
+            PendidikanModel::where(
+                'id_pendidikan',
+                $request->pendidikan_id_santri
+            )->value('categori');
+
+        $santri->pend_terakhir =
+            $pendidikanSantri ?? $santri->pend_terakhir;
+    }
+
     $santri->warga_negara = $request->warganegara;
-
-
 
     $santri->save();
 
+    /*
+    |--------------------------------------------------------------------------
+    | AYAH
+    |--------------------------------------------------------------------------
+    */
 
-
-
-// ================= UPDATE WALI =================
+    $kabupatenAyah =
+        KabupatenModel::find($request->tempat_lahir_ayah);
 
     $wali->ayah = $request->ayah;
     $wali->status_ayah = $request->status_ayah;
     $wali->warga_negara_ayah = $request->warganegara_ayah;
     $wali->ayah_nik = $request->nik_ayah;
-    $wali->tempat_lahir_ayah = $request->tempat_lahir_ayah;
+
+    $wali->tempat_lahir_ayah =
+        $kabupatenAyah
+        ? $kabupatenAyah->nama
+        : $wali->tempat_lahir_ayah;
+
     $wali->tgl_lahir_ayah = $request->tgl_lahir_ayah;
     $wali->pekerjaan_ayah = $request->pekerjaan_ayah;
+
     if ($request->pendidikan_id_ayah) {
 
-    $pendidikanAyah = \App\PendidikanModel::where('id_pendidikan', $request->pendidikan_id_ayah)
-        ->value('categori');
+        $pendidikanAyah =
+            PendidikanModel::where(
+                'id_pendidikan',
+                $request->pendidikan_id_ayah
+            )->value('categori');
 
-    $wali->pend_terakhir_ayah = $pendidikanAyah ?? $wali->pend_terakhir_ayah;
+        $wali->pend_terakhir_ayah =
+            $pendidikanAyah
+            ?? $wali->pend_terakhir_ayah;
+    }
 
-}
+    /*
+    |--------------------------------------------------------------------------
+    | IBU
+    |--------------------------------------------------------------------------
+    */
 
+    $kabupatenIbu =
+        KabupatenModel::find($request->tempat_lahir_ibu);
 
     $wali->ibu = $request->ibu;
     $wali->status_ibu = $request->status_ibu;
     $wali->warga_negara_ibu = $request->warganegara_ibu;
     $wali->nik_ibu = $request->nik_ibu;
-    $wali->tempat_lahir_ibu = $request->tempat_lahir_ibu;
+
+    $wali->tempat_lahir_ibu =
+        $kabupatenIbu
+        ? $kabupatenIbu->nama
+        : $wali->tempat_lahir_ibu;
+
     $wali->tgl_lahir_ibu = $request->tgl_lahir_ibu;
     $wali->pekerjaan_ibu = $request->pekerjaan_ibu;
+
     if ($request->pendidikan_id_ibu) {
 
-    $pendidikanIbu = \App\PendidikanModel::where('id_pendidikan', $request->pendidikan_id_ibu)
-        ->value('categori');
+        $pendidikanIbu =
+            PendidikanModel::where(
+                'id_pendidikan',
+                $request->pendidikan_id_ibu
+            )->value('categori');
 
-    $wali->pend_terakhir_ibu = $pendidikanIbu ?? $wali->pend_terakhir_ibu;
-
-}
-
-    // ================= ALAMAT AYAH =================
-
-if ($request->ayah_propinsi_id) {
-    $wali->provinsi_ayah = ProvinsiModel::where('id', $request->ayah_propinsi_id)->value('nama') ?? $wali->provinsi_ayah;
-}
-
-if ($request->ayah_kabupaten_id) {
-    $wali->kabupaten_ayah = KabupatenModel::where('id', $request->ayah_kabupaten_id)->value('nama') ?? $wali->kabupaten_ayah;
-}
-
-if ($request->ayah_kecamatan_id) {
-    $wali->kecamatan_ayah = KecamatanModel::where('id', $request->ayah_kecamatan_id)->value('nama') ?? $wali->kecamatan_ayah;
-}
-
-if ($request->ayah_kelurahan_id) {
-    $wali->kelurahan_ayah = Alamat::where('id', $request->ayah_kelurahan_id)->value('nama') ?? $wali->kelurahan_ayah;
-}
-
-if ($request->filled('jalan_ayah')) {
-    $wali->jalan_ayah = $request->jalan_ayah;
-}
-
-
-// ================= ALAMAT IBU =================
-
-if ($request->alamat_sama) {
-
-    // jika checkbox dicentang → alamat ibu mengikuti ayah
-
-    $wali->provinsi_ibu  = $wali->provinsi_ayah;
-    $wali->kabupaten_ibu = $wali->kabupaten_ayah;
-    $wali->kecamatan_ibu = $wali->kecamatan_ayah;
-    $wali->kelurahan_ibu = $wali->kelurahan_ayah;
-    $wali->jalan_ibu     = $wali->jalan_ayah;
-
-} else {
-
-    // jika tidak sama → ambil dari input ibu
-
-    if ($request->ibu_propinsi_id) {
-        $wali->provinsi_ibu = ProvinsiModel::where('id', $request->ibu_propinsi_id)->value('nama') ?? $wali->provinsi_ibu;
+        $wali->pend_terakhir_ibu =
+            $pendidikanIbu
+            ?? $wali->pend_terakhir_ibu;
     }
 
-    if ($request->ibu_kabupaten_id) {
-        $wali->kabupaten_ibu = KabupatenModel::where('id', $request->ibu_kabupaten_id)->value('nama') ?? $wali->kabupaten_ibu;
+    /*
+    |--------------------------------------------------------------------------
+    | ALAMAT AYAH
+    |--------------------------------------------------------------------------
+    */
+
+    if ($request->ayah_propinsi_id) {
+
+        $wali->provinsi_ayah =
+            ProvinsiModel::where(
+                'id',
+                $request->ayah_propinsi_id
+            )->value('nama');
+
     }
 
-    if ($request->ibu_kecamatan_id) {
-        $wali->kecamatan_ibu = KecamatanModel::where('id', $request->ibu_kecamatan_id)->value('nama') ?? $wali->kecamatan_ibu;
+    if ($request->ayah_kabupaten_id) {
+
+        $wali->kabupaten_ayah =
+            KabupatenModel::where(
+                'id',
+                $request->ayah_kabupaten_id
+            )->value('nama');
+
     }
 
-    if ($request->ibu_kelurahan_id) {
-        $wali->kelurahan_ibu = Alamat::where('id', $request->ibu_kelurahan_id)->value('nama') ?? $wali->kelurahan_ibu;
+    if ($request->ayah_kecamatan_id) {
+
+        $wali->kecamatan_ayah =
+            KecamatanModel::where(
+                'id',
+                $request->ayah_kecamatan_id
+            )->value('nama');
+
     }
 
-    if ($request->filled('jalan_ibu')) {
-        $wali->jalan_ibu = $request->jalan_ibu;
+    if ($request->ayah_kelurahan_id) {
+
+        $wali->kelurahan_ayah =
+            Alamat::where(
+                'id',
+                $request->ayah_kelurahan_id
+            )->value('nama');
+
     }
 
-}
+    if ($request->filled('jalan_ayah')) {
+        $wali->jalan_ayah = $request->jalan_ayah;
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | ALAMAT IBU
+    |--------------------------------------------------------------------------
+    */
+
+    if ($request->alamat_sama) {
+
+        $wali->provinsi_ibu  = $wali->provinsi_ayah;
+        $wali->kabupaten_ibu = $wali->kabupaten_ayah;
+        $wali->kecamatan_ibu = $wali->kecamatan_ayah;
+        $wali->kelurahan_ibu = $wali->kelurahan_ayah;
+        $wali->jalan_ibu     = $wali->jalan_ayah;
+
+    } else {
+
+        if ($request->ibu_propinsi_id) {
+
+            $wali->provinsi_ibu =
+                ProvinsiModel::where(
+                    'id',
+                    $request->ibu_propinsi_id
+                )->value('nama');
+
+        }
+
+        if ($request->ibu_kabupaten_id) {
+
+            $wali->kabupaten_ibu =
+                KabupatenModel::where(
+                    'id',
+                    $request->ibu_kabupaten_id
+                )->value('nama');
+
+        }
+
+        if ($request->ibu_kecamatan_id) {
+
+            $wali->kecamatan_ibu =
+                KecamatanModel::where(
+                    'id',
+                    $request->ibu_kecamatan_id
+                )->value('nama');
+
+        }
+
+        if ($request->ibu_kelurahan_id) {
+
+            $wali->kelurahan_ibu =
+                Alamat::where(
+                    'id',
+                    $request->ibu_kelurahan_id
+                )->value('nama');
+
+        }
+
+        if ($request->filled('jalan_ibu')) {
+            $wali->jalan_ibu = $request->jalan_ibu;
+        }
+    }
 
     $wali->save();
 
-
-// ================= TAHUN MASUK =================
+    /*
+    |--------------------------------------------------------------------------
+    | TAHUN MASUK
+    |--------------------------------------------------------------------------
+    */
 
     ThnMasukModel::updateOrCreate(
+
         ['id_santri' => $id],
-        ['thn_masuk' => $request->tahun_masuk]
+
+        [
+            'thn_masuk' => $request->tahun_masuk
+        ]
+
     );
 
-
-// ================= TAHUN KELUAR =================
+    /*
+    |--------------------------------------------------------------------------
+    | TAHUN KELUAR
+    |--------------------------------------------------------------------------
+    */
 
     ThnKeluarModel::updateOrCreate(
+
         ['id_santri' => $id],
-        ['thn_keluar' => $request->tahun_keluar]
+
+        [
+            'thn_keluar' => $request->tahun_keluar
+        ]
+
     );
 
-
-    return redirect()->route('admin')->with('success', 'Data Berhasil disimpan');
-
+    return back()->with(
+        'success',
+        'Data berhasil diupdate'
+    );
 }
 
     /**

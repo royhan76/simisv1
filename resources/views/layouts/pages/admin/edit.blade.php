@@ -87,7 +87,7 @@
                                             </div>
                                             <div class="form-group ">
                                                 <label for="inputFloatingLabel2" class="placeholder">NIK</label>
-                                                <input id="inputFloatingLabel2" id="nik" name="nik" type="text"
+                                                <input id="nik" name="nik" type="text"
                                                     class="form-control input-full" value="{{ $santri->nik }}">
                                             </div>
                                             <div class="form-group">
@@ -162,13 +162,13 @@
 
                                             <div class="form-group">
                                                 <label>Tahun Masuk</label>
-                                                <input type="text" name="tahun_masuk" value="{{ $tahunMasuk }}"
+                                                <input type="date" name="tahun_masuk" value="{{ $tahunMasuk }}"
                                                     class="form-control tanggal">
                                             </div>
 
                                             <div class="form-group">
                                                 <label>Tahun Keluar</label>
-                                                <input type="text" name="tahun_keluar" value="{{ $tahunKeluar }}"
+                                                <input type="date" name="tahun_keluar" value="{{ $tahunKeluar }}"
                                                     class="form-control tanggal">
                                             </div>
                                         </div>
@@ -235,7 +235,7 @@
                                             <div class="form-group ">
                                                 <label for="inputFloatingLabel2" class="placeholder">Foto
                                                     Profil</label><br>
-                                                <input type="file" name="image" id="image">
+                                                <input type="file" name="photo" id="photo">
                                             </div>
 
                                         </div>
@@ -301,7 +301,7 @@
                                             <div class="form-group">
                                                 <label>Tempat Lahir Ayah</label>
                                                 <select name="tempat_lahir_ayah"
-                                                    class="form-control tempat_lahir"></select>
+                                                    class="form-control tempat_lahir_ayah"></select>
                                             </div>
                                             <div class="form-group">
                                                 <label>Tanggal Lahir</label>
@@ -563,15 +563,15 @@
 
         function setDefault(selector, value) {
 
-    if (!value) return;
+            if (!value) return;
 
-    let option = new Option(value, value, true, true);
+            let option = new Option(value, value, true, true);
 
-    $(selector)
-        .append(option)
-        .trigger('change');
+            $(selector)
+                .append(option)
+                .trigger('change');
 
-}
+        }
 
 
 
@@ -599,7 +599,7 @@
             setDefault('.pendidikan_id_santri', "{{ old('pendidikan_id_santri', $santri->pend_terakhir) }}");
             setDefault('.tempat_lahir', "{{ old('tempat_lahir', $santri->tempat_lahir) }}");
             setDefault('.agama', "{{ old('agama', $santri->agama ?? '') }}");
-            setDefault('.tempat_lahir_ayah', "{{ old('tempat_lahir', $santri->tempat_lahir) }}");
+            setDefault('.tempat_lahir_ayah', "{{ old('tempat_lahir_ayah', $wali->tempat_lahir_ayah) }}");
             setDefault('.tempat_lahir_ibu', "{{ old('tempat_lahir_ibu', $wali->tempat_lahir_ibu) }}");
             setDefault('.pendidikan_id_ayah', "{{ old('pendidikan_id_ayah', $wali->pend_terakhir_ayah) }}");
             setDefault('.pendidikan_id_ibu', "{{ old('pendidikan_id_ibu', $wali->pend_terakhir_ibu) }}");
@@ -719,7 +719,5 @@
         setDefault('.santri_kabupaten', "{{ old('santri_kabupaten_id', $santri->kabupaten ?? '') }}");
         setDefault('.santri_kecamatan', "{{ old('santri_kecamatan_id', $santri->kecamatan ?? '') }}");
         setDefault('.santri_kelurahan', "{{ old('santri_kelurahan_id', $santri->kelurahan ?? '') }}");
-
-
     </script>
 @endpush
