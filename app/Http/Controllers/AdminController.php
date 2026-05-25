@@ -23,6 +23,7 @@ use \Yajra\Datatables\Datatables;
 use App\Exports\SantriExport;
 use Maatwebsite\Excel\Facades\Excel;
 use RealRashid\SweetAlert\Facades\Alert;
+use Illuminate\Support\Facades\File;
 
 class AdminController extends Controller
 {
@@ -344,7 +345,17 @@ public function update(Request $request, $id)
             Storage::disk('public')->delete($photo->path);
         }
 
-        $path = $request->file('photo')->store('images', 'public');
+        // $path = $request->file('photo')->store('images', 'public');
+        $file = $request->file('photo');
+
+        $filename = time().'_'.$file->getClientOriginalName();
+
+        $file->storeAs('images', $filename, 'public');
+
+        // copy ke public/storage
+        $file->move(public_path('storage/images'), $filename);
+
+        $path = 'images/'.$filename;
 
         if (!$photo) {
 
@@ -371,7 +382,18 @@ public function update(Request $request, $id)
             Storage::disk('public')->delete($dok_kk->path);
         }
 
-        $path = $request->file('dok_kk')->store('images', 'public');
+        // $path = $request->file('dok_kk')->store('images', 'public');
+
+        $file = $request->file('dok_kk');
+
+        $filename = time().'_'.$file->getClientOriginalName();
+
+        $file->storeAs('images', $filename, 'public');
+
+        // copy ke public/storage
+        $file->move(public_path('storage/images'), $filename);
+
+        $path = 'images/'.$filename;
 
         if (!$dok_kk) {
 
