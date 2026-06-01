@@ -107,6 +107,11 @@ return [
                     'url' => '/admin/bendahara/pembayaran'
                 ],
 
+                [
+                    'title' => 'Laporan Keuangan',
+                    'url' => '/admin/bendahara/laporan-keuangan'
+                ],
+
 
             ]
         ],

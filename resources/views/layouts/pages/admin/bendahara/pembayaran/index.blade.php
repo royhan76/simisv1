@@ -122,11 +122,12 @@
                             return `
                             <div class="d-flex justify-content-center">
 
-                                <button class="btn btn-info btn-sm mr-2">
+                                <button type="button" class="btn btn-info btn-sm mr-2"
+                                    onclick="openDetail(${row.santri_id})">
                                     Detail
                                 </button>
 
-                                <button class="btn btn-success btn-sm"
+                                <button type="button" class="btn btn-success btn-sm"
                                     onclick="openBayar(${row.santri_id})">
 
                                     Bayar
@@ -142,6 +143,79 @@
 
             });
 
+        }
+
+        // =========================================
+        // OPEN MODAL DETAIL
+        // =========================================
+        function openDetail(santri_id) {
+
+            $('#detail_nama').val('-');
+            $('#detail_nik').val('-');
+            $('#detail_khos').val('-');
+            $('#detail_status').val('-');
+            $('#detail_kamar').val('-');
+
+            $('#detail_unit_sudah').html('<div class="text-muted">Memuat data...</div>');
+            $('#detail_unit_belum').html('<div class="text-muted">Memuat data...</div>');
+            $('#detail_syahriyah_sudah').html('<div class="text-muted">Memuat data...</div>');
+            $('#detail_syahriyah_belum').html('<div class="text-muted">Memuat data...</div>');
+            $('#detail_tahun_hijriyah').text('');
+
+            $.ajax({
+                url: '/admin/bendahara/pembayaran/detail/' + santri_id,
+                type: 'GET',
+
+                success: function(res) {
+
+                    if (!res.success) {
+                        Swal.fire('Gagal!', res.message ?? 'Detail tidak ditemukan', 'error');
+                        return;
+                    }
+
+                    $('#detail_foto').attr('src', res.santri.foto);
+                    $('#detail_nama').val(res.santri.nama ?? '-');
+                    $('#detail_nik').val(res.santri.nik ?? '-');
+                    $('#detail_khos').val(res.santri.khos ?? '-');
+                    $('#detail_status').val(res.santri.status ?? '-');
+                    $('#detail_kamar').val(res.santri.kamar ?? '-');
+                    $('#detail_tahun_hijriyah').text(res.tahun_hijriyah ?? '');
+
+                    const unitSudahBayar = res.unit_sudah_bayar || [];
+                    const unitBelumBayar = res.unit_belum_bayar || [];
+                    const syahriyahSudahBayar = res.syahriyah_sudah_bayar || [];
+                    const syahriyahBelumBayar = res.syahriyah_belum_bayar || [];
+                    const syahriyahNominal = parseInt(res.syahriyah_nominal || 0);
+                    const totalDibayar = parseInt(res.total_dibayar || 0);
+                    const unitTotalDibayar = parseInt(res.unit_total_dibayar || 0);
+                    const syahriyahTotalDibayar = parseInt(res.syahriyah_total_dibayar || 0);
+
+                    $('#detail_summary_total_paid').text(formatRupiah(totalDibayar));
+                    $('#detail_summary_unit_total_paid').text(formatRupiah(unitTotalDibayar));
+                    $('#detail_summary_syahriyah_total_paid').text(formatRupiah(syahriyahTotalDibayar));
+                    $('#detail_summary_unit_paid').text(unitSudahBayar.length);
+                    $('#detail_summary_unit_unpaid').text(unitBelumBayar.length);
+                    $('#detail_summary_syahriyah_paid').text(syahriyahSudahBayar.length);
+                    $('#detail_summary_syahriyah_unpaid').text(syahriyahBelumBayar.length);
+
+                    $('#detail_unit_paid_count_label').text(unitSudahBayar.length + ' item');
+                    $('#detail_unit_unpaid_count_label').text(unitBelumBayar.length + ' item');
+                    $('#detail_syahriyah_paid_count_label').text(syahriyahSudahBayar.length + ' bulan');
+                    $('#detail_syahriyah_unpaid_count_label').text(syahriyahBelumBayar.length + ' bulan');
+
+                    $('#detail_unit_sudah').html(renderUnitList(unitSudahBayar, true));
+                    $('#detail_unit_belum').html(renderUnitList(unitBelumBayar, false));
+                    $('#detail_syahriyah_sudah').html(renderSyahriyahList(syahriyahSudahBayar, syahriyahNominal));
+                    $('#detail_syahriyah_belum').html(renderMonthList(syahriyahBelumBayar));
+
+                    $('#modalDetailPembayaran').modal('show');
+                },
+
+                error: function(xhr) {
+                    console.log(xhr.responseJSON);
+                    Swal.fire('Gagal!', 'Detail pembayaran gagal dimuat', 'error');
+                }
+            });
         }
 
         // =========================================
@@ -455,6 +529,118 @@
 
             return hijriYear + ' H';
 
+        }
+
+        function escapeHtml(value) {
+            return String(value ?? '')
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
+        }
+
+        function formatRupiah(value) {
+            return 'Rp ' + parseInt(value || 0).toLocaleString('id-ID');
+        }
+
+        function renderUnitList(items, sudahBayar) {
+            if (!items || items.length === 0) {
+                return '<div class="text-muted py-2">Tidak ada data</div>';
+            }
+
+            return `
+                <div class="table-responsive">
+                    <table class="table table-sm table-hover detail-table mb-0">
+                        <thead class="thead-light">
+                            <tr>
+                                <th>Nama Unit</th>
+                                <th class="text-right">Nominal</th>
+                                <th class="text-center">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${items.map(function(item) {
+                                const label = escapeHtml(item.name);
+                                const nominal = parseInt(item.nominal || 0).toLocaleString('id-ID');
+                                const tanggal = item.tanggal_bayar ? escapeHtml(item.tanggal_bayar) : '';
+
+                                return `
+                                    <tr>
+                                        <td>
+                                            <div class="font-weight-bold">${label}</div>
+                                            ${sudahBayar && tanggal ? `<div class="small text-muted">Bayar: ${tanggal}</div>` : ''}
+                                        </td>
+                                        <td class="text-right">Rp ${nominal}</td>
+                                        <td class="text-center">
+                                            <span class="badge badge-${sudahBayar ? 'success' : 'danger'}">
+                                                ${sudahBayar ? 'Lunas' : 'Belum'}
+                                            </span>
+                                        </td>
+                                    </tr>
+                                `;
+                            }).join('')}
+                        </tbody>
+                    </table>
+                </div>
+            `;
+        }
+
+        function renderSyahriyahList(items, nominalDefault) {
+            if (!items || items.length === 0) {
+                return '<div class="text-muted py-2">Tidak ada data</div>';
+            }
+
+            return `
+                <div class="table-responsive">
+                    <table class="table table-sm table-hover detail-table mb-0">
+                        <thead class="thead-light">
+                            <tr>
+                                <th>Bulan</th>
+                                <th>Tahun</th>
+                                <th class="text-right">Nominal</th>
+                                <th class="text-center">Tanggal</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${items.map(function(item) {
+                                const bulan = escapeHtml(item.bulan);
+                                const nominalAngka = parseInt(nominalDefault || item.nominal || 0);
+                                const nominal = nominalAngka.toLocaleString('id-ID');
+                                const tahun = escapeHtml(item.tahun_hijriyah || '-');
+                                const tanggal = item.tanggal_bayar ? escapeHtml(item.tanggal_bayar) : '-';
+
+                                return `
+                                    <tr>
+                                        <td class="font-weight-bold">${bulan}</td>
+                                        <td>${tahun}</td>
+                                        <td class="text-right">Rp ${nominal}</td>
+                                        <td class="text-center">${tanggal}</td>
+                                    </tr>
+                                `;
+                            }).join('')}
+                        </tbody>
+                    </table>
+                </div>
+            `;
+        }
+
+        function renderMonthList(items) {
+            if (!items || items.length === 0) {
+                return '<div class="text-success font-weight-bold py-2">Semua bulan pada tahun ini sudah lunas</div>';
+            }
+
+            return `
+                <div class="d-flex flex-wrap">
+                    ${items.map(function(item) {
+                        return `
+                            <span class="badge badge-danger mr-2 mb-2 px-3 py-2">
+                                ${escapeHtml(item)}
+                            </span>
+                        `;
+                    }).join('')}
+                </div>
+            `;
         }
     </script>
 @endpush
