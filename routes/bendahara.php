@@ -31,6 +31,7 @@ Route::prefix('admin/bendahara')
 
     Route::get('/laporan-keuangan', 'BendaharaController@laporanKeuangan');
     Route::get('/laporan-keuangan/data', 'BendaharaController@getLaporanKeuangan');
+    Route::get('/laporan-keuangan/export', 'BendaharaController@exportLaporanKeuangan');
     Route::get('/laporan-keuangan/detail/{santri_id}', 'BendaharaController@detailLaporanKeuangan');
 
     Route::get('/master-pembayaran/data','BendaharaController@getMasterPembayaran');

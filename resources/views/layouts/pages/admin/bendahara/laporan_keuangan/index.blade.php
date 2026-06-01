@@ -2,43 +2,119 @@
 
 @section('body')
     <style>
-        .summary-card {
+        .report-shell {
+            background: linear-gradient(180deg, #f7f9fc 0%, #eef3f8 100%);
+        }
+
+        .summary-card,
+        .matrix-card,
+        .rekap-card {
             border: 0;
-            box-shadow: 0 0.25rem 1rem rgba(0, 0, 0, 0.06);
+            box-shadow: 0 0.45rem 1.2rem rgba(16, 24, 40, 0.08);
+            border-radius: 18px;
         }
 
         .summary-label {
-            font-size: .8rem;
+            font-size: .76rem;
             text-transform: uppercase;
-            letter-spacing: .04em;
+            letter-spacing: .08em;
             color: #6c757d;
-            margin-bottom: .35rem;
+            margin-bottom: .25rem;
+            font-weight: 700;
         }
 
         .summary-value {
-            font-size: 1.65rem;
+            font-size: 1.55rem;
             font-weight: 800;
-            line-height: 1.05;
+            line-height: 1.08;
         }
 
-        #modalDetailLaporan .modal-dialog {
-            max-width: 96vw;
-            width: 96vw;
-            margin: 1rem auto;
+        .matrix-table {
+            white-space: nowrap;
         }
 
-        #modalDetailLaporan .modal-content {
-            min-height: 90vh;
-        }
-
-        #modalDetailLaporan .modal-body {
-            max-height: calc(90vh - 120px);
-            overflow-y: auto;
-        }
-
-        #modalDetailLaporan .detail-table th,
-        #modalDetailLaporan .detail-table td {
+        .matrix-table thead th {
+            font-size: .78rem;
+            text-transform: uppercase;
+            letter-spacing: .04em;
+            background: #f8fafc;
             vertical-align: middle;
+        }
+
+        .matrix-table td,
+        .matrix-table th {
+            vertical-align: middle !important;
+        }
+
+        .matrix-table tbody tr:hover {
+            background: rgba(13, 110, 253, 0.03);
+        }
+
+        .check-pill {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 2rem;
+            height: 2rem;
+            padding: 0 .55rem;
+            border-radius: 999px;
+            font-weight: 800;
+            font-size: .78rem;
+            line-height: 1;
+        }
+
+        .check-pill--yes {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .check-pill--no {
+            background: #eef2f7;
+            color: #94a3b8;
+        }
+
+        .check-pill--syah {
+            background: #dbeafe;
+            color: #1d4ed8;
+        }
+
+        .check-pill--jumlah {
+            background: #e2e8f0;
+            color: #0f172a;
+        }
+
+        .rekap-table thead th {
+            font-size: .78rem;
+            text-transform: uppercase;
+            letter-spacing: .04em;
+            background: #f8fafc;
+        }
+
+        .rekap-table td,
+        .rekap-table th {
+            vertical-align: middle !important;
+        }
+
+        .legend-dot {
+            display: inline-block;
+            width: .75rem;
+            height: .75rem;
+            border-radius: 50%;
+            margin-right: .45rem;
+            transform: translateY(1px);
+        }
+
+        .legend-paid {
+            background: #16a34a;
+        }
+
+        .legend-syah {
+            background: #2563eb;
+        }
+
+        .table-scroll {
+            overflow: auto;
+            border-radius: 14px;
         }
     </style>
 
@@ -48,200 +124,150 @@
                 <div>
                     <h2 class="text-white pb-2 fw-bold">Laporan Keuangan</h2>
                     <h5 class="text-white op-7 mb-2">
-                        Ringkasan pembayaran santri per nama
+                        Format checklist pembayaran santri per unit dan syahriyah
                     </h5>
                 </div>
             </div>
         </div>
     </div>
 
-    <div class="page-inner mt--5">
+    <div class="page-inner mt--5 report-shell">
         <div class="row mb-4">
-            <div class="col-md-3 mb-3">
+            <div class="col-md-4 mb-3">
                 <div class="card summary-card h-100">
                     <div class="card-body">
-                        <div class="summary-label">Total Santri Bayar</div>
+                        <div class="summary-label">Total Santri</div>
                         <div class="summary-value text-primary" id="summary_total_santri">0</div>
-                        <div class="small text-muted">Santri yang memiliki transaksi pembayaran</div>
+                        <div class="small text-muted">Seluruh data santri yang tampil di laporan</div>
                     </div>
                 </div>
             </div>
 
-            <div class="col-md-3 mb-3">
+            <div class="col-md-4 mb-3">
                 <div class="card summary-card h-100">
                     <div class="card-body">
-                        <div class="summary-label">Total Transaksi</div>
-                        <div class="summary-value text-info" id="summary_total_transaksi">0</div>
-                        <div class="small text-muted">Gabungan unit dan syahriyah</div>
+                        <div class="summary-label">Santri Sudah Bayar</div>
+                        <div class="summary-value text-success" id="summary_santri_sudah_bayar">0</div>
+                        <div class="small text-muted">Santri yang minimal punya 1 pembayaran</div>
                     </div>
                 </div>
             </div>
 
-            <div class="col-md-3 mb-3">
+            <div class="col-md-4 mb-3">
                 <div class="card summary-card h-100">
                     <div class="card-body">
                         <div class="summary-label">Total Pemasukan</div>
-                        <div class="summary-value text-success" id="summary_total_nominal">Rp 0</div>
-                        <div class="small text-muted">Akumulasi semua pembayaran</div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-md-3 mb-3">
-                <div class="card summary-card h-100">
-                    <div class="card-body">
-                        <div class="summary-label">Rincian</div>
-                        <div class="small text-muted mb-1">Unit: <span id="summary_unit_nominal">Rp 0</span></div>
-                        <div class="small text-muted">Syahriyah: <span id="summary_syahriyah_nominal">Rp 0</span></div>
+                        <div class="summary-value text-dark" id="summary_total_nominal">Rp 0</div>
+                        <div class="small text-muted">Gabungan seluruh unit dan syahriyah</div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <div class="row mt--2">
-            <div class="col-md-12">
-                <div class="card full-height shadow-sm">
+        <div class="row">
+            <div class="col-xl-8 mb-4">
+                <div class="card matrix-card h-100">
                     <div class="card-body">
-                        <div class="d-flex align-items-center justify-content-between mb-3">
-                            <div>
-                                <h4 class="mb-0">Data Laporan Keuangan</h4>
-                                <small class="text-muted">Satu baris mewakili satu santri</small>
+                        <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between mb-3">
+                            <div class="mb-2 mb-md-0">
+                                <h4 class="mb-1">Data Pembayaran Komplek</h4>
+                                <small class="text-muted">Checklist hijau menandakan pembayaran sudah masuk</small>
                             </div>
 
-                            <button type="button" class="btn btn-outline-primary" id="btnRefreshLaporan">
-                                Refresh Data
-                            </button>
+                            <div class="d-flex align-items-center">
+                                <button type="button" class="btn btn-success btn-sm mr-2" id="btnExportLaporan">
+                                    Export Excel
+                                </button>
+                                <button type="button" class="btn btn-outline-primary btn-sm" id="btnRefreshLaporan">
+                                    Refresh Data
+                                </button>
+                            </div>
                         </div>
 
-                        <div class="table-responsive">
-                            <table id="tabel-laporan" class="display table table-striped table-hover" width="100%">
+                        <div class="table-scroll">
+                            <table id="tabel-laporan" class="table table-bordered table-hover matrix-table mb-0" width="100%">
                                 <thead>
                                     <tr>
-                                        <th>No</th>
-                                        <th>Nama Santri</th>
-                                        <th>Kamar</th>
-                                        <th>Status</th>
-                                        <th class="text-right">Total Dibayar</th>
-                                        <th class="text-center">Aksi</th>
+                                        <th style="width:60px">No</th>
+                                        <th style="min-width:220px">Nama</th>
+                                        <th style="width:72px">DB</th>
+                                        <th style="width:72px">DU</th>
+                                        <th style="width:88px">SARP B</th>
+                                        <th style="width:88px">SARP L</th>
+                                        <th style="width:88px">PENG B</th>
+                                        <th style="width:88px">PENG L</th>
+                                        <th style="width:72px">RJB</th>
+                                        <th style="width:72px">KAL</th>
+                                        <th style="width:72px">KTS</th>
+                                        <th style="width:72px">SER</th>
+                                        <th style="width:90px">SYAH</th>
+                                        <th style="width:72px">JML</th>
                                     </tr>
                                 </thead>
+                                <tbody></tbody>
                             </table>
                         </div>
 
-                        <div class="mt-3 pt-3 border-top d-flex flex-column flex-md-row justify-content-between">
+                        <div class="mt-3 pt-3 border-top d-flex flex-column flex-md-row justify-content-between align-items-md-center">
                             <div class="mb-2 mb-md-0">
-                                <strong>Total keseluruhan santri yang sudah bayar: </strong>
-                                <span id="footer_total_santri" class="text-primary">0</span>
+                                <strong>Jumlah keseluruhan santri yang sudah bayar: </strong>
+                                <span id="footer_santri_sudah_bayar" class="text-success">0</span>
                             </div>
                             <div>
                                 <strong>Total pemasukan keseluruhan: </strong>
-                                <span id="footer_total_nominal" class="text-success">Rp 0</span>
+                                <span id="footer_total_nominal" class="text-dark">Rp 0</span>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
-    </div>
 
-    <div class="modal fade" id="modalDetailLaporan" tabindex="-1">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header bg-info text-white">
-                    <h4 class="modal-title">Detail Pembayaran Santri</h4>
-                    <button type="button" class="close text-white" data-dismiss="modal">&times;</button>
-                </div>
+            <div class="col-xl-4 mb-4">
+                <div class="card rekap-card h-100">
+                    <div class="card-body">
+                        <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between mb-3">
+                            <div>
+                                <h4 class="mb-1">Rekap Unit</h4>
+                                <small class="text-muted">Nominal dihitung dari data master pembayaran</small>
+                            </div>
+                        </div>
 
-                <div class="modal-body">
-                    <div class="card shadow-sm mb-4">
-                        <div class="card-body">
-                            <div class="row">
-                                <div class="col-md-4 col-lg-3 text-center mb-3 mb-md-0">
-                                    <img id="detail_foto" src="{{ asset('storage/images/muslim.png') }}" class="img-fluid rounded shadow"
-                                        style="height:260px; width:100%; object-fit:cover;">
-                                </div>
+                        <div class="table-responsive">
+                            <table class="table table-sm table-hover rekap-table mb-0">
+                                <thead>
+                                    <tr>
+                                        <th>Unit Pembayaran</th>
+                                        <th class="text-center">Satuan</th>
+                                        <th class="text-right">Nominal</th>
+                                        <th class="text-right">Jumlah</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="summary_body">
+                                    <tr>
+                                        <td colspan="4" class="text-center text-muted py-4">Memuat data...</td>
+                                    </tr>
+                                </tbody>
+                                <tfoot>
+                                    <tr class="font-weight-bold">
+                                        <td colspan="3" class="text-right">JUMLAH</td>
+                                        <td class="text-right" id="summary_total_jumlah">Rp 0</td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
 
-                                <div class="col-md-8 col-lg-9">
-                                    <div class="row">
-                                        <div class="col-md-6 mb-3">
-                                            <label>Nama Santri</label>
-                                            <input type="text" id="detail_nama" class="form-control" readonly>
-                                        </div>
-
-                                        <div class="col-md-6 mb-3">
-                                            <label>Status</label>
-                                            <input type="text" id="detail_status" class="form-control" readonly>
-                                        </div>
-
-                                        <div class="col-md-6 mb-3">
-                                            <label>Kamar</label>
-                                            <input type="text" id="detail_kamar" class="form-control" readonly>
-                                        </div>
-
-                                        <div class="col-md-6 mb-3">
-                                            <label>Total Dibayar</label>
-                                            <input type="text" id="detail_total_dibayar" class="form-control" readonly>
-                                        </div>
-                                    </div>
-                                </div>
+                        <div class="alert alert-light border mt-3 mb-0">
+                            <div class="font-weight-bold mb-2">Keterangan</div>
+                            <div class="small text-muted mb-1">
+                                <span class="legend-dot legend-paid"></span>
+                                Checklist hijau = sudah bayar
+                            </div>
+                            <div class="small text-muted">
+                                <span class="legend-dot legend-syah"></span>
+                                Kolom SYAH menampilkan total bulan syahriyah yang lunas
                             </div>
                         </div>
                     </div>
-
-                    <div class="row mb-4">
-                        <div class="col-md-4 mb-3">
-                            <div class="card summary-card h-100">
-                                <div class="card-body">
-                                    <div class="summary-label">Total Transaksi</div>
-                                    <div class="summary-value text-primary" id="detail_total_transaksi">0</div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="col-md-4 mb-3">
-                            <div class="card summary-card h-100">
-                                <div class="card-body">
-                                    <div class="summary-label">Unit</div>
-                                    <div class="summary-value text-info" id="detail_total_unit">Rp 0</div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="col-md-4 mb-3">
-                            <div class="card summary-card h-100">
-                                <div class="card-body">
-                                    <div class="summary-label">Syahriyah</div>
-                                    <div class="summary-value text-warning" id="detail_total_syahriyah">Rp 0</div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="card shadow-sm">
-                        <div class="card-header bg-light">
-                            <h5 class="mb-0">Histori Pembayaran</h5>
-                        </div>
-                        <div class="card-body">
-                            <div class="table-responsive">
-                                <table class="table table-sm table-hover detail-table mb-0">
-                                    <thead class="thead-light">
-                                        <tr>
-                                            <th>Tanggal</th>
-                                            <th>Jenis</th>
-                                            <th>Detail</th>
-                                            <th class="text-right">Nominal</th>
-                                            <th>Keterangan</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="detail_laporan_body"></tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Tutup</button>
                 </div>
             </div>
         </div>
@@ -251,7 +277,9 @@
 @push('javascript')
     <script>
         let tableLaporan = null;
-        let laporanData = [];
+        let laporanRows = [];
+        let laporanSummary = {};
+        let laporanCodes = [];
 
         $.ajaxSetup({
             headers: {
@@ -261,11 +289,14 @@
 
         $(document).ready(function() {
             loadLaporanKeuangan();
-            $('#modalDetailLaporan').appendTo('body');
         });
 
         $('#btnRefreshLaporan').on('click', function() {
             loadLaporanKeuangan();
+        });
+
+        $('#btnExportLaporan').on('click', function() {
+            window.location = '/admin/bendahara/laporan-keuangan/export';
         });
 
         function loadLaporanKeuangan() {
@@ -276,9 +307,13 @@
                     $('#btnRefreshLaporan').prop('disabled', true).text('Memuat...');
                 },
                 success: function(res) {
-                    laporanData = res.data || [];
-                    updateSummary(res.summary || {});
-                    renderLaporanTable(laporanData);
+                    laporanRows = res.data || [];
+                    laporanSummary = res.summary || {};
+                    laporanCodes = res.codes || [];
+
+                    updateSummary(laporanSummary);
+                    renderSummaryTable(laporanCodes);
+                    renderMatrixTable(laporanRows);
                 },
                 error: function(xhr) {
                     console.log(xhr.responseJSON || xhr);
@@ -292,16 +327,45 @@
 
         function updateSummary(summary) {
             $('#summary_total_santri').text(summary.total_santri || 0);
-            $('#summary_total_transaksi').text(summary.total_transaksi || 0);
+            $('#summary_santri_sudah_bayar').text(summary.santri_sudah_bayar || 0);
             $('#summary_total_nominal').text(formatRupiah(summary.total_nominal || 0));
-            $('#summary_unit_nominal').text(formatRupiah(summary.unit_nominal || 0));
-            $('#summary_syahriyah_nominal').text(formatRupiah(summary.syahriyah_nominal || 0));
 
-            $('#footer_total_santri').text(summary.total_santri || 0);
+            $('#footer_santri_sudah_bayar').text(summary.santri_sudah_bayar || 0);
             $('#footer_total_nominal').text(formatRupiah(summary.total_nominal || 0));
+            $('#summary_total_jumlah').text(formatRupiah(summary.total_nominal || 0));
         }
 
-        function renderLaporanTable(rows) {
+        function renderSummaryTable(codes) {
+            if (!codes || !codes.length) {
+                $('#summary_body').html('<tr><td colspan="4" class="text-center text-muted py-4">Tidak ada data</td></tr>');
+                $('#summary_total_jumlah').text(formatRupiah(0));
+                return;
+            }
+
+            const rows = codes.map(function(item) {
+                return `
+                    <tr>
+                        <td>
+                            <div class="font-weight-bold">${escapeHtml(item.label || '-')}</div>
+                            <div class="small text-muted">${escapeHtml(item.code || '-')}</div>
+                        </td>
+                        <td class="text-center">${parseInt(item.satuan || 0).toLocaleString('id-ID')}</td>
+                        <td class="text-right">${formatRupiah(item.nominal || 0)}</td>
+                        <td class="text-right">${formatRupiah(item.jumlah || 0)}</td>
+                    </tr>
+                `;
+            }).join('');
+
+            $('#summary_body').html(rows);
+
+            const totalJumlah = codes.reduce(function(total, item) {
+                return total + parseInt(item.jumlah || 0);
+            }, 0);
+
+            $('#summary_total_jumlah').text(formatRupiah(totalJumlah));
+        }
+
+        function renderMatrixTable(rows) {
             if (tableLaporan) {
                 tableLaporan.clear().destroy();
             }
@@ -309,6 +373,8 @@
             tableLaporan = $('#tabel-laporan').DataTable({
                 data: rows,
                 destroy: true,
+                scrollX: true,
+                autoWidth: false,
                 pageLength: 25,
                 lengthMenu: [10, 25, 50, 100],
                 order: [[1, 'asc']],
@@ -327,42 +393,137 @@
                         }
                     },
                     {
-                        data: 'khos',
-                        render: function(data) {
-                            return escapeHtml(data || '-');
-                        }
-                    },
-                    {
-                        data: 'status',
-                        render: function(data) {
-                            const value = String(data || '-').toLowerCase();
-                            const badge = value.includes('keluar') ? 'danger' : (value.includes('aktif') ? 'success' : 'secondary');
-                            return `<span class="badge badge-${badge}">${escapeHtml(data || '-')}</span>`;
-                        }
-                    },
-                    {
-                        data: 'total_dibayar',
-                        className: 'text-right',
-                        render: function(data, type, row) {
-                            if (type === 'sort' || type === 'type') {
-                                return parseInt(data || 0);
-                            }
-                            return row.total_dibayar_rupiah || formatRupiah(data || 0);
-                        }
-                    },
-                    {
-                        data: 'santri_id',
+                        data: 'db',
                         className: 'text-center',
-                        orderable: false,
-                        render: function(data, type, row) {
-                            return `
-                                <button type="button" class="btn btn-info btn-sm" onclick="openDetailLaporan('${row.santri_id}')">
-                                    Detail
-                                </button>
-                            `;
+                        render: function(data, type) {
+                            if (type === 'sort' || type === 'type') {
+                                return data ? 1 : 0;
+                            }
+                            return renderChecklist(data);
+                        }
+                    },
+                    {
+                        data: 'du',
+                        className: 'text-center',
+                        render: function(data, type) {
+                            if (type === 'sort' || type === 'type') {
+                                return data ? 1 : 0;
+                            }
+                            return renderChecklist(data);
+                        }
+                    },
+                    {
+                        data: 'sarp_b',
+                        className: 'text-center',
+                        render: function(data, type) {
+                            if (type === 'sort' || type === 'type') {
+                                return data ? 1 : 0;
+                            }
+                            return renderChecklist(data);
+                        }
+                    },
+                    {
+                        data: 'sarp_l',
+                        className: 'text-center',
+                        render: function(data, type) {
+                            if (type === 'sort' || type === 'type') {
+                                return data ? 1 : 0;
+                            }
+                            return renderChecklist(data);
+                        }
+                    },
+                    {
+                        data: 'peng_b',
+                        className: 'text-center',
+                        render: function(data, type) {
+                            if (type === 'sort' || type === 'type') {
+                                return data ? 1 : 0;
+                            }
+                            return renderChecklist(data);
+                        }
+                    },
+                    {
+                        data: 'peng_l',
+                        className: 'text-center',
+                        render: function(data, type) {
+                            if (type === 'sort' || type === 'type') {
+                                return data ? 1 : 0;
+                            }
+                            return renderChecklist(data);
+                        }
+                    },
+                    {
+                        data: 'rjb',
+                        className: 'text-center',
+                        render: function(data, type) {
+                            if (type === 'sort' || type === 'type') {
+                                return data ? 1 : 0;
+                            }
+                            return renderChecklist(data);
+                        }
+                    },
+                    {
+                        data: 'kal',
+                        className: 'text-center',
+                        render: function(data, type) {
+                            if (type === 'sort' || type === 'type') {
+                                return data ? 1 : 0;
+                            }
+                            return renderChecklist(data);
+                        }
+                    },
+                    {
+                        data: 'kts',
+                        className: 'text-center',
+                        render: function(data, type) {
+                            if (type === 'sort' || type === 'type') {
+                                return data ? 1 : 0;
+                            }
+                            return renderChecklist(data);
+                        }
+                    },
+                    {
+                        data: 'ser',
+                        className: 'text-center',
+                        render: function(data, type) {
+                            if (type === 'sort' || type === 'type') {
+                                return data ? 1 : 0;
+                            }
+                            return renderChecklist(data);
+                        }
+                    },
+                    {
+                        data: 'syah_count',
+                        className: 'text-center',
+                        render: function(data, type) {
+                            const count = parseInt(data || 0);
+                            if (type === 'sort' || type === 'type') {
+                                return count;
+                            }
+
+                            return count > 0
+                                ? `<span class="check-pill check-pill--syah">✓ ${count}</span>`
+                                : '<span class="check-pill check-pill--no">-</span>';
+                        }
+                    },
+                    {
+                        data: 'jml',
+                        className: 'text-center',
+                        render: function(data, type) {
+                            const total = parseInt(data || 0);
+                            if (type === 'sort' || type === 'type') {
+                                return total;
+                            }
+
+                            return `<span class="check-pill check-pill--jumlah">${total}</span>`;
                         }
                     }
                 ],
+                rowCallback: function(row, data) {
+                    if (parseInt(data.jml || 0) > 0) {
+                        $(row).addClass('table-success');
+                    }
+                },
                 language: {
                     search: 'Cari:',
                     lengthMenu: 'Tampilkan _MENU_ data',
@@ -378,68 +539,12 @@
             });
         }
 
-        window.openDetailLaporan = function(santri_id) {
-            $('#detail_nama').val('-');
-            $('#detail_status').val('-');
-            $('#detail_kamar').val('-');
-            $('#detail_total_dibayar').val('Rp 0');
-            $('#detail_total_transaksi').text('0');
-            $('#detail_total_unit').text('Rp 0');
-            $('#detail_total_syahriyah').text('Rp 0');
-            $('#detail_laporan_body').html('<tr><td colspan="5" class="text-muted">Memuat data...</td></tr>');
-
-            $.ajax({
-                url: '/admin/bendahara/laporan-keuangan/detail/' + santri_id,
-                type: 'GET',
-                success: function(res) {
-                    if (!res.success) {
-                        Swal.fire('Gagal!', res.message ?? 'Detail tidak ditemukan', 'error');
-                        return;
-                    }
-
-                    $('#detail_foto').attr('src', res.santri.foto || '{{ asset("storage/images/muslim.png") }}');
-                    $('#detail_nama').val(res.santri.nama ?? '-');
-                    $('#detail_status').val(res.santri.status ?? '-');
-                    $('#detail_kamar').val(res.santri.kamar ?? '-');
-                    $('#detail_total_dibayar').val(formatRupiah(res.summary.total_nominal || 0));
-                    $('#detail_total_transaksi').text(res.summary.total_transaksi || 0);
-                    $('#detail_total_unit').text(formatRupiah(res.summary.unit_nominal || 0));
-                    $('#detail_total_syahriyah').text(formatRupiah(res.summary.syahriyah_nominal || 0));
-
-                    renderDetailRows(res.transaksi || []);
-                    setTimeout(function() {
-                        $('#modalDetailLaporan').modal('show');
-                    }, 0);
-                },
-                error: function(xhr) {
-                    console.log(xhr.responseJSON || xhr);
-                    Swal.fire('Gagal!', 'Detail laporan gagal dimuat', 'error');
-                }
-            });
-        };
-
-        function renderDetailRows(items) {
-            if (!items || items.length === 0) {
-                $('#detail_laporan_body').html('<tr><td colspan="5" class="text-muted">Tidak ada transaksi</td></tr>');
-                return;
+        function renderChecklist(value) {
+            if (value) {
+                return '<span class="check-pill check-pill--yes">✓</span>';
             }
 
-            const rows = items.map(function(item) {
-                const badge = item.sumber === 'unit' ? 'info' : 'warning';
-                return `
-                    <tr>
-                        <td>${escapeHtml(item.tanggal_bayar || '-')}</td>
-                        <td><span class="badge badge-${badge}">${escapeHtml(item.jenis || '-')}</span></td>
-                        <td>
-                            <div class="font-weight-bold">${escapeHtml(item.detail || '-')}</div>
-                        </td>
-                        <td class="text-right">${escapeHtml(item.nominal_rupiah || formatRupiah(item.nominal || 0))}</td>
-                        <td>${escapeHtml(item.keterangan || '-')}</td>
-                    </tr>
-                `;
-            }).join('');
-
-            $('#detail_laporan_body').html(rows);
+            return '<span class="check-pill check-pill--no">-</span>';
         }
 
         function formatRupiah(value) {

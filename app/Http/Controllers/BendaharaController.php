@@ -9,6 +9,8 @@ use App\Pembayaran;
 use App\PembayaranUnit;
 use App\Syahriyah;
 use Illuminate\Support\Facades\DB;
+use App\Exports\LaporanKeuanganExport;
+use Maatwebsite\Excel\Facades\Excel;
 
 
 class BendaharaController extends Controller
@@ -76,36 +78,23 @@ class BendaharaController extends Controller
 
     public function getLaporanKeuangan()
     {
-        $syahriyahNominal = $this->getSyahriyahNominalAmount();
-
-        $transaksi = $this->getTransaksiKeuangan()
-            ->map(function ($item) use ($syahriyahNominal) {
-                if ($item['sumber'] === 'syahriyah') {
-                    $item['nominal'] = $syahriyahNominal;
-                    $item['nominal_rupiah'] = 'Rp ' . number_format($syahriyahNominal, 0, ',', '.');
-                }
-
-                return $item;
-            })
-            ->sortByDesc('created_at')
-            ->values();
-
-        $data = $this->groupTransaksiPerSantri($transaksi)
-            ->sortByDesc('last_payment_sort')
-            ->values();
+        $report = $this->buildLaporanKeuanganReport();
 
         return response()->json([
-            'data' => $data,
-            'summary' => [
-                'total_transaksi' => $transaksi->count(),
-                'total_nominal' => (int) $transaksi->sum('nominal'),
-                'unit_transaksi' => $transaksi->where('sumber', 'unit')->count(),
-                'syahriyah_transaksi' => $transaksi->where('sumber', 'syahriyah')->count(),
-                'unit_nominal' => (int) $transaksi->where('sumber', 'unit')->sum('nominal'),
-                'syahriyah_nominal' => (int) $transaksi->where('sumber', 'syahriyah')->count() * $syahriyahNominal,
-                'total_santri' => $data->count(),
-            ],
+            'data' => $report['rows'],
+            'summary' => $report['summary'],
+            'codes' => $report['codes'],
         ]);
+    }
+
+    public function exportLaporanKeuangan()
+    {
+        $report = $this->buildLaporanKeuanganReport();
+
+        return Excel::download(
+            new LaporanKeuanganExport($report),
+            'laporan_keuangan.xlsx'
+        );
     }
 
     public function detailLaporanKeuangan($santri_id)
@@ -161,6 +150,214 @@ class BendaharaController extends Controller
             'summary' => $summary,
             'transaksi' => $transaksi,
         ]);
+    }
+
+    private function buildLaporanKeuanganReport()
+    {
+        $definitions = $this->getLaporanKeuanganDefinitions();
+        $syahriyahNominal = $this->getSyahriyahNominalAmount();
+        $currentHijriYear = $this->getCurrentHijriYear();
+
+        $santriList = Santris::orderBy('nama')->get();
+
+        $unitPayments = PembayaranUnit::query()
+            ->orderBy('tanggal_bayar')
+            ->get()
+            ->groupBy('santri_id');
+
+        $syahriyahPayments = Syahriyah::query()
+            ->where('tahun_hijriyah', $currentHijriYear)
+            ->orderBy('tanggal_bayar')
+            ->get()
+            ->groupBy('santri_id');
+
+        $rows = $santriList->map(function ($santri, $index) use (
+            $definitions,
+            $unitPayments,
+            $syahriyahPayments
+        ) {
+            $santriUnitPayments = $unitPayments->get($santri->santri_id, collect());
+            $santriSyahriyahPayments = $syahriyahPayments->get($santri->santri_id, collect());
+
+            $paidCodes = [];
+
+            foreach ($definitions as $code => $definition) {
+                if ($code === 'SYAH') {
+                    continue;
+                }
+
+                $paid = $santriUnitPayments->contains(function ($payment) use ($definition) {
+                    return $this->matchesPaymentAlias($payment->nama_unit, $definition['aliases']);
+                });
+
+                if ($paid) {
+                    $paidCodes[] = $code;
+                }
+            }
+
+            $syahCount = $santriSyahriyahPayments->count();
+            $jml = count($paidCodes) + ($syahCount > 0 ? 1 : 0);
+
+            return [
+                'no' => $index + 1,
+                'santri_id' => $santri->santri_id,
+                'nama' => $santri->nama,
+                'db' => (bool) ($santriUnitPayments->contains(fn ($p) => $this->matchesPaymentAlias($p->nama_unit, $definitions['DB']['aliases']))),
+                'du' => (bool) ($santriUnitPayments->contains(fn ($p) => $this->matchesPaymentAlias($p->nama_unit, $definitions['DU']['aliases']))),
+                'sarp_b' => (bool) ($santriUnitPayments->contains(fn ($p) => $this->matchesPaymentAlias($p->nama_unit, $definitions['SARP_B']['aliases']))),
+                'sarp_l' => (bool) ($santriUnitPayments->contains(fn ($p) => $this->matchesPaymentAlias($p->nama_unit, $definitions['SARP_L']['aliases']))),
+                'peng_b' => (bool) ($santriUnitPayments->contains(fn ($p) => $this->matchesPaymentAlias($p->nama_unit, $definitions['PENG_B']['aliases']))),
+                'peng_l' => (bool) ($santriUnitPayments->contains(fn ($p) => $this->matchesPaymentAlias($p->nama_unit, $definitions['PENG_L']['aliases']))),
+                'rjb' => (bool) ($santriUnitPayments->contains(fn ($p) => $this->matchesPaymentAlias($p->nama_unit, $definitions['RJB']['aliases']))),
+                'kal' => (bool) ($santriUnitPayments->contains(fn ($p) => $this->matchesPaymentAlias($p->nama_unit, $definitions['KAL']['aliases']))),
+                'kts' => (bool) ($santriUnitPayments->contains(fn ($p) => $this->matchesPaymentAlias($p->nama_unit, $definitions['KTS']['aliases']))),
+                'ser' => (bool) ($santriUnitPayments->contains(fn ($p) => $this->matchesPaymentAlias($p->nama_unit, $definitions['SER']['aliases']))),
+                'syah_count' => $syahCount,
+                'jml' => $jml,
+            ];
+        })->values();
+
+        $codes = collect($definitions)->map(function ($definition, $code) use ($rows, $syahriyahNominal) {
+            if ($code === 'SYAH') {
+                $satuan = $rows->sum('syah_count');
+                $nominal = $syahriyahNominal;
+
+                return [
+                    'code' => $code,
+                    'label' => $definition['label'],
+                    'satuan' => $satuan,
+                    'nominal' => $nominal,
+                    'jumlah' => $satuan * $nominal,
+                ];
+            }
+
+            $satuan = $rows->filter(function ($row) use ($definition) {
+                return !empty($row[$definition['key']]);
+            })->count();
+
+            $nominal = $this->getNominalForAliases($definition['aliases']);
+
+            return [
+                'code' => $code,
+                'label' => $definition['label'],
+                'satuan' => $satuan,
+                'nominal' => $nominal,
+                'jumlah' => $satuan * $nominal,
+            ];
+        })->values();
+
+        $totalNominal = (int) $codes->sum('jumlah');
+        $totalTransaksi = (int) $rows->sum('jml');
+        $santriSudahBayar = (int) $rows->filter(function ($row) {
+            return (int) $row['jml'] > 0;
+        })->count();
+
+        return [
+            'rows' => $rows,
+            'codes' => $codes,
+            'summary' => [
+                'total_santri' => $rows->count(),
+                'santri_sudah_bayar' => $santriSudahBayar,
+                'total_transaksi' => $totalTransaksi,
+                'total_nominal' => $totalNominal,
+                'syahriyah_nominal' => $syahriyahNominal,
+                'current_hijri_year' => $currentHijriYear,
+            ],
+        ];
+    }
+
+    private function getLaporanKeuanganDefinitions()
+    {
+        return [
+            'DB' => [
+                'label' => 'Daftar Baru',
+                'key' => 'db',
+                'aliases' => ['Daftar Baru', 'Daftar Pondok', 'DB'],
+            ],
+            'DU' => [
+                'label' => 'Daftar Ulang',
+                'key' => 'du',
+                'aliases' => ['Daftar Ulang', 'DU'],
+            ],
+            'SARP_B' => [
+                'label' => 'Sarpras Baru',
+                'key' => 'sarp_b',
+                'aliases' => ['Sarpras Baru', 'Sarana & Prasarana Baru', 'Sarana Prasarana Baru', 'Sarpras', 'SARP B', 'Sarana & Prasarana'],
+            ],
+            'SARP_L' => [
+                'label' => 'Sarpras Lama',
+                'key' => 'sarp_l',
+                'aliases' => ['Sarpras Lama', 'Sarana & Prasarana Lama', 'SARP L'],
+            ],
+            'PENG_B' => [
+                'label' => 'Pengairan Baru',
+                'key' => 'peng_b',
+                'aliases' => ['Pengairan Baru', 'Pengairan'],
+            ],
+            'PENG_L' => [
+                'label' => 'Pengairan Lama',
+                'key' => 'peng_l',
+                'aliases' => ['Pengairan Lama'],
+            ],
+            'RJB' => [
+                'label' => 'Rojabiyah',
+                'key' => 'rjb',
+                'aliases' => ['Rojabiyah', 'Rojabiyah/Akhirus Sanah', 'Akhirus Sanah'],
+            ],
+            'KAL' => [
+                'label' => 'Kalender',
+                'key' => 'kal',
+                'aliases' => ['Kalender'],
+            ],
+            'KTS' => [
+                'label' => 'Kartu Tanda Santri',
+                'key' => 'kts',
+                'aliases' => ['KTS', 'Kartu Tanda Santri'],
+            ],
+            'SER' => [
+                'label' => 'Seragam',
+                'key' => 'ser',
+                'aliases' => ['Seragam'],
+            ],
+            'SYAH' => [
+                'label' => 'Syahriyah',
+                'key' => 'syah_count',
+                'aliases' => ['Syahriyah'],
+            ],
+        ];
+    }
+
+    private function matchesPaymentAlias($name, array $aliases)
+    {
+        $normalized = $this->normalizePaymentName($name);
+
+        foreach ($aliases as $alias) {
+            if ($normalized === $this->normalizePaymentName($alias)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private function normalizePaymentName($value)
+    {
+        return preg_replace('/[^a-z0-9]/', '', strtolower((string) $value));
+    }
+
+    private function getNominalForAliases(array $aliases)
+    {
+        $normalizedAliases = array_map(function ($alias) {
+            return $this->normalizePaymentName($alias);
+        }, $aliases);
+
+        $nominal = MasterPembayaran::query()
+            ->get()
+            ->first(function ($item) use ($normalizedAliases) {
+                return in_array($this->normalizePaymentName($item->name), $normalizedAliases, true);
+            });
+
+        return (int) ($nominal->nominal ?? 0);
     }
 
     private function getSyahriyahNominalAmount()
