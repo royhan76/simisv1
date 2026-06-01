@@ -14,8 +14,8 @@ class PendidikanController extends Controller
 {
     public function selectPendidikan(Request $request)
     {
-        $selectPendidikan = PendidikanModel::select('id_pendidikan','id_pendidikan as id' , 'categori', 'categori as text')
-        ->where(DB::raw('UPPER(id_pendidikan)'), 'like', '%' . strtoupper($request->q) . '%')
+        $selectPendidikan = PendidikanModel::select('categori','id_pendidikan as id' ,  'categori as text')
+        ->where(DB::raw('UPPER(categori)'), 'like', '%' . strtoupper($request->q) . '%')
             ->limit($request->page)
             ->get();
 
