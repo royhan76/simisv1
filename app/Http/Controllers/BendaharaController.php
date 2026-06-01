@@ -454,7 +454,10 @@ class BendaharaController extends Controller
 
     public function detailPembayaran($santri_id)
     {
-        $santri = Santris::where('santri_id', $santri_id)->first();
+        $santri = Santris::where(function ($query) use ($santri_id) {
+            $query->where('santri_id', $santri_id)
+                ->orWhere('id', $santri_id);
+        })->first();
 
         if (!$santri) {
             return response()->json([
@@ -463,9 +466,17 @@ class BendaharaController extends Controller
             ], 404);
         }
 
-        $foto = \App\Photo::where('santri_id', $santri_id)->first();
+        $santriKey = $santri->santri_id ?: $santri->id;
 
-        $unitSudahBayar = PembayaranUnit::where('santri_id', $santri_id)
+        $foto = \App\Photo::where(function ($query) use ($santri_id, $santriKey) {
+            $query->where('santri_id', $santriKey)
+                ->orWhere('santri_id', $santri_id);
+        })->first();
+
+        $unitSudahBayar = PembayaranUnit::where(function ($query) use ($santri_id, $santriKey) {
+                $query->where('santri_id', $santriKey)
+                    ->orWhere('santri_id', $santri_id);
+            })
             ->orderBy('tanggal_bayar')
             ->get();
 
@@ -484,7 +495,10 @@ class BendaharaController extends Controller
 
         $unitBelumBayar = $unitBelumBayarQuery->get();
 
-        $syahriyahSemua = Syahriyah::where('santri_id', $santri_id)
+        $syahriyahSemua = Syahriyah::where(function ($query) use ($santri_id, $santriKey) {
+                $query->where('santri_id', $santriKey)
+                    ->orWhere('santri_id', $santri_id);
+            })
             ->orderBy('tahun_hijriyah')
             ->orderBy('bulan')
             ->get();
@@ -494,7 +508,10 @@ class BendaharaController extends Controller
         $tahunAktif = optional($syahriyahSemua->sortByDesc('id')->first())->tahun_hijriyah
             ?? $this->getCurrentHijriYear();
 
-        $bulanSudahBayar = Syahriyah::where('santri_id', $santri_id)
+        $bulanSudahBayar = Syahriyah::where(function ($query) use ($santri_id, $santriKey) {
+                $query->where('santri_id', $santriKey)
+                    ->orWhere('santri_id', $santri_id);
+            })
             ->where('tahun_hijriyah', $tahunAktif)
             ->pluck('bulan')
             ->map(function ($item) {
@@ -519,7 +536,10 @@ class BendaharaController extends Controller
 
         $bulanBelumBayar = array_values(array_diff($daftarBulan, $bulanSudahBayar));
 
-        $syahriyahSudahBayar = Syahriyah::where('santri_id', $santri_id)
+        $syahriyahSudahBayar = Syahriyah::where(function ($query) use ($santri_id, $santriKey) {
+                $query->where('santri_id', $santriKey)
+                    ->orWhere('santri_id', $santri_id);
+            })
             ->where('tahun_hijriyah', $tahunAktif)
             ->orderByRaw("FIELD(bulan, 'Syawal', 'Dzulqodah', 'Dzulhijjah', 'Muharram', 'Shafar', 'Rabiul Awal', 'Rabiul Akhir', 'Jumadil Awal', 'Jumadil Akhir', 'Rajab', 'Syaban', 'Ramadhan')")
             ->get();
@@ -536,6 +556,7 @@ class BendaharaController extends Controller
             'success' => true,
             'santri' => [
                 'santri_id' => $santri->santri_id,
+                'id' => $santri->id ?? null,
                 'nama' => $santri->nama,
                 'nik' => $santri->nik,
                 'khos' => $santri->khos,
@@ -543,6 +564,14 @@ class BendaharaController extends Controller
                 'kamar' => $santri->kamar ?? '-',
                 'foto' => $fotoPath,
             ],
+            'santri_id' => $santri->santri_id,
+            'id' => $santri->id ?? null,
+            'nama' => $santri->nama,
+            'nik' => $santri->nik,
+            'khos' => $santri->khos,
+            'status' => $santri->status,
+            'kamar' => $santri->kamar ?? '-',
+            'foto' => $fotoPath,
             'unit_sudah_bayar' => $unitSudahBayar,
             'unit_belum_bayar' => $unitBelumBayar,
             'syahriyah_sudah_bayar' => $syahriyahSudahBayar,

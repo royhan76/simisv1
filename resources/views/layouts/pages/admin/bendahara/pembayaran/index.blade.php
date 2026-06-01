@@ -118,17 +118,22 @@
                         className: 'text-center',
 
                         render: function(id, type, row) {
+                            const santriId = row.santri_id || row.id || id;
+
+                            if (!santriId) {
+                                return '<span class="text-muted">ID tidak ada</span>';
+                            }
 
                             return `
                             <div class="d-flex justify-content-center">
 
                                 <button type="button" class="btn btn-info btn-sm mr-2"
-                                    onclick="openDetail(${row.santri_id})">
+                                    onclick="openDetail('${santriId}')">
                                     Detail
                                 </button>
 
                                 <button type="button" class="btn btn-success btn-sm"
-                                    onclick="openBayar(${row.santri_id})">
+                                    onclick="openBayar('${santriId}')">
 
                                     Bayar
 
@@ -173,12 +178,13 @@
                         return;
                     }
 
-                    $('#detail_foto').attr('src', res.santri.foto);
-                    $('#detail_nama').val(res.santri.nama ?? '-');
-                    $('#detail_nik').val(res.santri.nik ?? '-');
-                    $('#detail_khos').val(res.santri.khos ?? '-');
-                    $('#detail_status').val(res.santri.status ?? '-');
-                    $('#detail_kamar').val(res.santri.kamar ?? '-');
+                    const santri = res.santri || res;
+                    $('#detail_foto').attr('src', santri.foto || res.foto || '{{ asset("storage/images/muslim.png") }}');
+                    $('#detail_nama').val(santri.nama ?? res.nama ?? '-');
+                    $('#detail_nik').val(santri.nik ?? res.nik ?? '-');
+                    $('#detail_khos').val(santri.khos ?? res.khos ?? '-');
+                    $('#detail_status').val(santri.status ?? res.status ?? '-');
+                    $('#detail_kamar').val(santri.kamar ?? res.kamar ?? '-');
                     $('#detail_tahun_hijriyah').text(res.tahun_hijriyah ?? '');
 
                     const unitSudahBayar = res.unit_sudah_bayar || [];
@@ -280,19 +286,21 @@
 
                     console.log(res);
 
+                    const santri = res.santri || res;
+
                     // FOTO
                     $('#foto_santri').attr(
                         'src',
-                        res.foto ?
-                        '/storage/' + res.foto :
+                        santri.foto ?
+                        santri.foto :
                         '/assets/img/default.png'
                     );
 
                     // DETAIL
-                    $('#nama').val(res.nama ?? '-');
-                    $('#nik').val(res.nik ?? '-');
-                    $('#khos').val(res.khos ?? '-');
-                    $('#kamar').val(res.kamar ?? '-');
+                    $('#nama').val(santri.nama ?? res.nama ?? '-');
+                    $('#nik').val(santri.nik ?? res.nik ?? '-');
+                    $('#khos').val(santri.khos ?? res.khos ?? '-');
+                    $('#kamar').val(santri.kamar ?? res.kamar ?? '-');
 
                     // SHOW MODAL
                     $('#modalBayar').modal('show');
