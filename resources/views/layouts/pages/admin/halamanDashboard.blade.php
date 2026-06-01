@@ -31,7 +31,7 @@
                                         </div>
                                         <div class="col ml-3">
                                             <p class="card-category">Tarbiyah</p>
-                                            <h4 class="card-title">120</h4>
+                                            <h4 class="card-title">{{ $tarbiyah }}</h4>
                                         </div>
                                     </div>
                                 </div>
@@ -50,7 +50,7 @@
                                         </div>
                                         <div class="col ml-3">
                                             <p class="card-category">Pengurus</p>
-                                            <h4 class="card-title">45</h4>
+                                            <h4 class="card-title">{{ $pengurus }}</h4>
                                         </div>
                                     </div>
                                 </div>
@@ -69,7 +69,7 @@
                                         </div>
                                         <div class="col ml-3">
                                             <p class="card-category">Ndalem</p>
-                                            <h4 class="card-title">30</h4>
+                                            <h4 class="card-title">{{ $ndalem }}</h4>
                                         </div>
                                     </div>
                                 </div>
@@ -88,7 +88,7 @@
                                         </div>
                                         <div class="col ml-3">
                                             <p class="card-category">Alumni</p>
-                                            <h4 class="card-title">500</h4>
+                                            <h4 class="card-title">{{ $alumni }}</h4>
                                         </div>
                                     </div>
                                 </div>
@@ -107,7 +107,7 @@
                                         </div>
                                         <div class="col ml-3">
                                             <p class="card-category">Santri Baru</p>
-                                            <h4 class="card-title">200</h4>
+                                            <h4 class="card-title">{{ $santriBaru }}</h4>
                                         </div>
                                     </div>
                                 </div>
@@ -126,7 +126,7 @@
                                         </div>
                                         <div class="col ml-3">
                                             <p class="card-category">Santri Keluar</p>
-                                            <h4 class="card-title">80</h4>
+                                            <h4 class="card-title">{{ $santriKeluar }}</h4>
                                         </div>
                                     </div>
                                 </div>
@@ -155,22 +155,24 @@
 </div>
 
 <!-- Chart JS -->
-<script src="../../assets/js/plugin/chart.js/chart.min.js"></script>
+<script src="{{ asset('assets/js/plugin/chart.js/chart.min.js') }}"></script>
 
 <script>
 var ctx = document.getElementById('lineChart').getContext('2d');
+var chartLabels = @json($chartLabels);
+var chartData = @json($chartData);
 
 var lineChart = new Chart(ctx, {
     type: 'line',
     data: {
-        labels: ["2019", "2020", "2021", "2022", "2023", "2024", "2025"],
+        labels: chartLabels,
         datasets: [{
             label: "Jumlah Santri",
             borderColor: "#1d7af3",
             pointBackgroundColor: "#1d7af3",
             backgroundColor: "rgba(29,122,243,0.2)",
             fill: true,
-            data: [300, 350, 400, 480, 550, 620, 700]
+            data: chartData
         }]
     },
     options: {

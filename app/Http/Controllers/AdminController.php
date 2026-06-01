@@ -38,7 +38,55 @@ class AdminController extends Controller
     }
     public function halamanDashboard()
     {
-       return view('layouts.pages.admin.halamanDashboard');
+       $currentYear = (int) date('Y');
+       $years = collect(range($currentYear - 4, $currentYear))->map(function ($year) {
+           return (string) $year;
+       })->all();
+
+       $tarbiyah = DB::table('santri')
+           ->whereRaw("LOWER(COALESCE(status, '')) = ?", ['tarbiyah'])
+           ->count();
+
+       $pengurus = DB::table('santri')
+           ->whereRaw("LOWER(COALESCE(status, '')) = ?", ['pengurus'])
+           ->count();
+
+       $ndalem = DB::table('santri')
+           ->whereRaw("LOWER(COALESCE(status, '')) = ?", ['ndalem'])
+           ->count();
+
+       $santriBaru = DB::table('thn_masuk')
+           ->whereRaw("SUBSTRING(COALESCE(thn_masuk, ''), 1, 4) = ?", [(string) $currentYear])
+           ->count();
+
+       $santriKeluar = DB::table('thn_keluar')
+           ->whereRaw("SUBSTRING(COALESCE(thn_keluar, ''), 1, 4) = ?", [(string) $currentYear])
+           ->count();
+
+       $alumni = DB::table('thn_keluar')->count();
+
+       $chartCounts = DB::table('santri')
+           ->leftJoin('thn_masuk', 'santri.santri_id', '=', 'thn_masuk.id_santri')
+           ->selectRaw("SUBSTRING(COALESCE(thn_masuk.thn_masuk, ''), 1, 4) as tahun, COUNT(DISTINCT santri.santri_id) as total")
+           ->whereIn(DB::raw("SUBSTRING(COALESCE(thn_masuk.thn_masuk, ''), 1, 4)"), $years)
+           ->groupBy('tahun')
+           ->pluck('total', 'tahun');
+
+       $chartLabels = $years;
+       $chartData = collect($years)->map(function ($year) use ($chartCounts) {
+           return (int) ($chartCounts[$year] ?? 0);
+       })->all();
+
+       return view('layouts.pages.admin.halamanDashboard', compact(
+           'tarbiyah',
+           'pengurus',
+           'ndalem',
+           'alumni',
+           'santriBaru',
+           'santriKeluar',
+           'chartLabels',
+           'chartData'
+       ));
     }
 
     /**
